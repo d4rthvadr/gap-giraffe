@@ -1,24 +1,35 @@
 // Background Service Worker for Job Resume Optimizer Extension
 
 import type { Message, MessageResponse, StorageData, ModelConfig } from './types';
+import type { JobData } from './types';
+import { db } from './db/database';
 
 console.log('Job Resume Optimizer - Background Service Worker Started');
 
 // Initialize extension on install
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   console.log('Extension installed:', details.reason);
   
   if (details.reason === 'install') {
     // First-time installation
-    initializeExtension();
+    await initializeExtension();
   } else if (details.reason === 'update') {
     console.log('Extension updated to version:', chrome.runtime.getManifest().version);
+    // Re-initialize database to ensure schema is up to date
+    await db.initialize();
   }
 });
 
 // Initialize extension data
 async function initializeExtension(): Promise<void> {
   try {
+    console.log('Initializing extension...');
+    
+    // Initialize database first
+    await db.initialize();
+    console.log('Database initialized');
+    
+    // Set default configuration in Chrome storage
     const defaultConfig: ModelConfig = {
       provider: 'gemini',
       modelName: 'gemini-1.5-flash',
@@ -85,7 +96,7 @@ async function handleAnalyzeJob(sendResponse: (response: MessageResponse) => voi
     // Inject content script into the current tab
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      files: ['dist/content.js']
+      files: ['dist/content/content.js']
     });
     
     sendResponse({ success: true, message: 'Content script injected' });
@@ -104,10 +115,47 @@ async function handleJobExtracted(
   try {
     console.log('Job data received from content script:', jobData);
     
-    // TODO: Store in database (Stage 2)
+    const job = jobData as JobData;
+    
+    // Ensure database is initialized
+    await db.initialize();
+    
+    // Check if job already exists
+    const existingJob = await db.getJobByUrl(job.url);
+    
+    if (existingJob) {
+      console.log('Job already exists in database:', existingJob.id);
+      sendResponse({ 
+        success: true, 
+        message: 'Job already in database',
+        data: { jobId: existingJob.id }
+      });
+      return;
+    }
+    
+    // Create new job record
+    const jobId = await db.createJob({
+      url: job.url,
+      title: job.title.value,
+      title_confidence: job.title.confidence,
+      company: job.company.value || null,
+      company_confidence: job.company.confidence || null,
+      description: job.description.value,
+      description_confidence: job.description.confidence,
+      requirements: null, // TODO: Extract requirements in future
+      scraped_at: job.extractedAt,
+      analyzed: false
+    });
+    
+    console.log('Job saved to database with ID:', jobId);
+    
     // TODO: Trigger AI analysis (Stage 3)
     
-    sendResponse({ success: true, message: 'Job data received' });
+    sendResponse({ 
+      success: true, 
+      message: 'Job data saved successfully',
+      data: { jobId }
+    });
   } catch (error) {
     console.error('Error handling job data:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
