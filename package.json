@@ -1,0 +1,23 @@
+{
+  "name": "job-resume-optimizer",
+  "version": "1.0.0",
+  "description": "Chrome extension to optimize resumes for job applications using AI",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf extension/dist",
+    "prebuild": "npm run clean && mkdir -p extension/dist"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [
+    "chrome-extension",
+    "resume",
+    "job-search",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT"
+}

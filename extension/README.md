@@ -1,130 +1,140 @@
-# Job Resume Optimizer - Chrome Extension
-
-## Stage 1: Basic Extension Setup ✓
+# Job Resume Optimizer - Chrome Extension (TypeScript)
 
 A Chrome browser extension that helps job seekers optimize their resumes by analyzing job postings using AI.
 
-## Current Features (Stage 1)
+## Tech Stack
 
-✅ **Basic Chrome Extension Structure**
-- Manifest V3 configuration
-- Background service worker
-- Browser action popup with modern UI
-- Content script injection system
+- **TypeScript** - Type-safe development
+- **Chrome Extension API** - Manifest V3
+- **SQLite** - Local data storage (coming in Stage 2)
+- **Gemini Flash** - AI model integration (coming in Stage 3)
 
-✅ **Job Analysis Trigger**
-- Manual trigger via popup "Analyze This Job" button
-- Current page URL detection
-- Loading states and user feedback
-
-✅ **Generic Job Scraping**
-- Intelligent heuristic-based extraction
-- Multi-strategy approach for job title, company, and description
-- Confidence scoring for each extracted field
-- Visual feedback on job posting pages
-
-## Installation Instructions
-
-### Load Extension in Chrome (Developer Mode)
-
-1. **Open Chrome Extensions Page**
-   - Navigate to `chrome://extensions/`
-   - Or: Menu → More Tools → Extensions
-
-2. **Enable Developer Mode**
-   - Toggle "Developer mode" switch in top-right corner
-
-3. **Load Unpacked Extension**
-   - Click "Load unpacked" button
-   - Navigate to: `/Users/mac/Documents/Ghost rider/frontend masters/job-tracker/extension`
-   - Click "Select"
-
-4. **Verify Installation**
-   - Extension should appear in extensions list
-   - Pin the extension icon to toolbar (optional but recommended)
-
-### Test the Extension
-
-1. **Navigate to Any Job Posting**
-   - Open LinkedIn, Indeed, or any job posting page
-   - Example: https://www.linkedin.com/jobs/
-
-2. **Click Extension Icon**
-   - Look for the purple gradient icon in toolbar
-   - Popup window should appear showing current URL
-
-3. **Click "Analyze This Job"**
-   - Button triggers content script injection
-   - Watch for notification on page: "🔍 Analyzing job posting..."
-   - Should see success notification after extraction
-
-4. **Check Console**
-   - Open DevTools (F12 or Cmd+Option+I)
-   - Check Console tab for extraction logs
-   - Verify job title, company, and description extracted
-
-## File Structure
+## Project Structure
 
 ```
-extension/
-├── manifest.json          # Extension configuration
-├── background.js          # Service worker
-├── popup/
-│   ├── popup.html        # Popup UI
-│   ├── popup.css         # Popup styles
-│   └── popup.js          # Popup logic
-├── content/
-│   └── content.js        # Job extraction script
-└── icons/
-    ├── icon16.png
-    ├── icon32.png
-    ├── icon48.png
-    └── icon128.png
+job-tracker/
+├── src/                    # TypeScript source files
+│   ├── types/
+│   │   └── index.ts       # Type definitions
+│   ├── background.ts      # Service worker
+│   ├── popup/
+│   │   └── popup.ts       # Popup logic
+│   └── content/
+│       └── content.ts     # Content script
+├── extension/             # Extension files
+│   ├── manifest.json     # Extension config
+│   ├── dist/             # Compiled JavaScript (generated)
+│   ├── popup/
+│   │   ├── popup.html
+│   │   └── popup.css
+│   └── icons/
+├── tsconfig.json         # TypeScript config
+└── package.json          # Dependencies
 ```
 
-## What Works Now
+## Development Setup
 
-- ✅ Extension loads in Chrome
-- ✅ Popup displays with current page URL
-- ✅ "Analyze This Job" button triggers content script injection
-- ✅ Content script extracts job details using heuristics
-- ✅ Visual feedback on job pages (notifications)
-- ✅ Console logging for debugging
+### Install Dependencies
 
-## What's Next (Upcoming Stages)
+```bash
+npm install
+```
 
-- ⏳ SQLite database integration for storage
-- ⏳ Resume upload and parsing
-- ⏳ AI model integration (Gemini Flash)
-- ⏳ Resume optimization suggestions
-- ⏳ Version management
-- ⏳ Application tracking
+### Build TypeScript
 
-## Debugging
+```bash
+# Build once
+npm run build
 
-**View Background Service Worker Console:**
-- Go to `chrome://extensions/`
-- Click "Service worker" link under extension
-- Background script logs appear here
+# Watch mode (auto-rebuild on changes)
+npm run watch
 
-**View Content Script Console:**
-- Open any job page
-- Press F12 (or Cmd+Option+I)
-- Console tab shows content script logs
+# Clean build
+npm run clean
+```
 
-**View Popup Console:**
-- Open popup by clicking extension icon
-- Right-click inside popup → "Inspect"
-- DevTools opens for popup window
+### Load Extension in Chrome
 
-## Known Limitations (Stage 1)
+1. Build the TypeScript first: `npm run build`
+2. Open Chrome → `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked"
+5. Select: `/Users/mac/Documents/Ghost rider/frontend masters/job-tracker/extension`
 
-- Mock results displayed (85% match, 92% certainty)
-- No actual AI analysis yet
-- No database storage
-- No resume management
-- Settings page not implemented yet
+## Stage 1: Complete ✓
+
+**Features:**
+- ✅ TypeScript codebase with strict type checking
+- ✅ Chrome extension structure (Manifest V3)
+- ✅ Job scraping with confidence scoring
+- ✅ Manual trigger via popup
+- ✅ Modern UI with animations
+- ✅ Content script injection
+
+**Type Safety:**
+- All message types defined
+- Job data structures typed
+- DOM manipulation type-safe
+- Chrome API fully typed
+
+## Development Workflow
+
+1. **Edit TypeScript files** in `src/`
+2. **Run build** (or use watch mode)
+3. **Reload extension** in Chrome
+4. **Test on job pages**
+
+### Watch Mode (Recommended)
+
+```bash
+npm run watch
+```
+
+This automatically recompiles TypeScript when you save files. Just reload the extension in Chrome to see changes.
+
+## Key Types
+
+```typescript
+// Job extraction
+interface JobData {
+  url: string;
+  title: ExtractedField;
+  company: ExtractedField;
+  description: ExtractedField;
+}
+
+// Model configuration
+interface ModelConfig {
+  provider: 'gemini' | 'openai' | 'anthropic';
+  modelName: string;
+  isDefault: boolean;
+}
+
+// Messages between components
+type MessageType = 'ANALYZE_JOB' | 'JOB_EXTRACTED' | 'GET_CONFIG' | 'SAVE_CONFIG';
+```
+
+## Testing
+
+1. Navigate to any job posting
+2. Click extension icon
+3. Click "Analyze This Job"
+4. Check console for extracted data (F12)
+5. Verify typed data structures
+
+## Next Stages
+
+- **Stage 2**: Database & Resume Management
+- **Stage 3**: AI Model Integration (Gemini Flash)
+- **Stage 4**: Resume Optimization
+- **Stage 5**: Application Tracking
+
+## Scripts
+
+- `npm run build` - Compile TypeScript
+- `npm run watch` - Watch mode
+- `npm run clean` - Remove compiled files
 
 ---
 
-**Status:** Stage 1 Complete - Ready for Review ✓
+**Status:** Stage 1 Complete - TypeScript Refactor ✓

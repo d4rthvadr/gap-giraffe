@@ -1,26 +1,25 @@
 // Popup JavaScript for Job Resume Optimizer
 
+import type { Message, MessageResponse, AnalysisResult } from '../types';
+
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('Popup loaded');
   
   // Get DOM elements
-  const analyzeBtn = document.getElementById('analyze-btn');
-  const pageUrlElement = document.getElementById('page-url');
-  const loadingSection = document.getElementById('loading-section');
-  const resultSection = document.getElementById('result-section');
-  const errorSection = document.getElementById('error-section');
-  const errorMessage = document.getElementById('error-message');
-  const optionsBtn = document.getElementById('options-btn');
-  const trackerBtn = document.getElementById('tracker-btn');
+  const analyzeBtn = document.getElementById('analyze-btn') as HTMLButtonElement;
+  const pageUrlElement = document.getElementById('page-url') as HTMLSpanElement;
+  const loadingSection = document.getElementById('loading-section') as HTMLDivElement;
+  const resultSection = document.getElementById('result-section') as HTMLDivElement;
+  const errorSection = document.getElementById('error-section') as HTMLDivElement;
+  const errorMessage = document.getElementById('error-message') as HTMLParagraphElement;
+  const optionsBtn = document.getElementById('options-btn') as HTMLButtonElement;
+  const trackerBtn = document.getElementById('tracker-btn') as HTMLButtonElement;
   
   // Get current tab URL
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab) {
+    if (tab && tab.url) {
       pageUrlElement.textContent = tab.url;
-      
-      // Store tab ID for later use
-      window.currentTabId = tab.id;
     }
   } catch (error) {
     console.error('Error getting current tab:', error);
@@ -41,9 +40,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     try {
       // Send message to background script to analyze job
-      const response = await chrome.runtime.sendMessage({
+      const message: Message = {
         type: 'ANALYZE_JOB'
-      });
+      };
+      
+      const response = await chrome.runtime.sendMessage(message) as MessageResponse;
       
       if (response.success) {
         console.log('Job analysis started successfully');
@@ -60,7 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (error) {
       console.error('Error analyzing job:', error);
-      showError(error.message);
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';
+      showError(errorMsg);
     }
   });
   
@@ -76,18 +78,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   // Show results
-  function showResults(data) {
+  function showResults(data: AnalysisResult): void {
     loadingSection.classList.add('hidden');
     analyzeBtn.disabled = false;
     
-    document.getElementById('match-score').textContent = data.matchScore + '%';
-    document.getElementById('certainty-score').textContent = data.certaintyScore + '%';
+    const matchScoreElement = document.getElementById('match-score') as HTMLSpanElement;
+    const certaintyScoreElement = document.getElementById('certainty-score') as HTMLSpanElement;
+    
+    matchScoreElement.textContent = data.matchScore + '%';
+    certaintyScoreElement.textContent = data.certaintyScore + '%';
     
     resultSection.classList.remove('hidden');
   }
   
   // Show error
-  function showError(message) {
+  function showError(message: string): void {
     loadingSection.classList.add('hidden');
     analyzeBtn.disabled = false;
     
