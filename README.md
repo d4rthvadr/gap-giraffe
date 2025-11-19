@@ -59,11 +59,18 @@ gap-giraffe/
 │   │   └── popup.ts
 │   ├── content/            # Job scraping scripts
 │   │   └── content.ts
+│   ├── ai/                 # AI integration layer
+│   │   ├── types.ts
+│   │   ├── ai-provider.ts
+│   │   ├── gemini-provider.ts
+│   │   └── ai-service.ts
 │   ├── db/                 # Database layer
-│   │   ├── storage-adapter.ts    # Abstract interface
-│   │   ├── indexeddb-adapter.ts  # IndexedDB implementation
-│   │   ├── database.ts           # Database manager
-│   │   └── types.ts              # Database types
+│   │   ├── storage-adapter.ts
+│   │   ├── indexeddb-adapter.ts
+│   │   ├── database.ts
+│   │   └── types.ts
+│   ├── options/            # Settings page
+│   │   └── options.ts
 │   └── types/              # Shared TypeScript types
 │       └── index.ts
 ├── extension/              # Extension files (load in Chrome)
@@ -72,6 +79,9 @@ gap-giraffe/
 │   ├── popup/
 │   │   ├── popup.html
 │   │   └── popup.css
+│   ├── options/          # Settings page UI
+│   │   ├── options.html
+│   │   └── options.css
 │   └── icons/
 ├── docs/                  # Documentation
 │   └── roadmap.md        # Development roadmap
@@ -95,7 +105,7 @@ npm run clean
 
 ## ✨ Features
 
-### Current (Stage 2 Complete)
+### Current (Stage 3 Complete)
 
 ✅ **Job Analysis**
 - Intelligent job scraping from any website
@@ -103,31 +113,46 @@ npm run clean
 - Confidence scoring for extraction quality
 - Visual feedback on job pages
 
+✅ **AI Integration**
+- Google Gemini 1.5 Flash integration
+- Automatic job requirement extraction
+- Key skills identification
+- Experience level analysis
+- Cost: ~$0.0002 per analysis (nearly free!)
+
 ✅ **Data Management**
 - IndexedDB storage (native browser)
 - Job history tracking
 - Duplicate detection
+- AI analysis results stored
 - Storage adapter pattern (easy to switch backends)
+
+✅ **Configuration**
+- Options page for API key setup
+- Model selection (Flash vs Pro)
+- Temperature control
+- API connection testing
+- Privacy-focused (all data local)
 
 ✅ **User Interface**
 - Modern popup with gradient design
 - Loading states and error handling
 - Responsive layout
-- Settings and tracker navigation
+- Settings access from popup
 
-### Coming Soon (Stage 3+)
-
-⏳ **AI Integration**
-- Gemini Flash 1.5 for analysis
-- Resume vs job gap analysis
-- Match scoring
-- Optimization suggestions
+### Coming Soon (Stage 4+)
 
 ⏳ **Resume Management**
 - Upload and parse resumes (PDF, TXT, DOCX)
 - Create job-specific versions
 - Version comparison
 - Download optimized resumes
+
+⏳ **Advanced AI Analysis**
+- Resume vs job matching
+- Match scoring (0-100)
+- Specific optimization suggestions
+- Section-by-section improvements
 
 ⏳ **Application Tracking**
 - Status tracking (Applied, Interview, Offer, etc.)
@@ -179,6 +204,6 @@ MIT
 
 ---
 
-**Version:** 1.0.0 (Stage 2 Complete)  
+**Version:** 1.0.0 (Stage 3 Complete)  
 **Status:** Active Development  
 **Last Updated:** November 19, 2025
