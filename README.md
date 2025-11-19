@@ -1,37 +1,22 @@
 # Gap Giraffe 🦒
 
-A Chrome browser extension that helps job seekers optimize their resumes by analyzing job postings using AI.
+A Chrome browser extension that helps job seekers optimize their resumes using AI-powered analysis.
 
-## 🎯 Project Goal
+## 🎯 Goal
 
-Automatically analyze job descriptions and help applicants tailor their resumes for better matches. The extension will:
-- Extract job requirements from any job posting page
-- Compare job requirements with your resume
-- Use AI (Gemini Flash) to suggest resume optimizations
-- Track resume versions for different jobs
-- Monitor application status over time
-
-## 📊 Current Status: Stage 1 Complete ✅
-
-**What's Working:**
-- ✅ Chrome extension structure (Manifest V3)
-- ✅ TypeScript codebase with full type safety
-- ✅ Manual job analysis trigger via popup
-- ✅ Intelligent job scraping (title, company, description)
-- ✅ Confidence scoring for extracted data
-- ✅ Modern UI with animations
-
-**What's Coming:**
-- ⏳ **Stage 2**: SQLite database + Resume management
-- ⏳ **Stage 3**: AI model integration (Gemini Flash)
-- ⏳ **Stage 4**: Resume optimization & versioning
-- ⏳ **Stage 5**: Application tracking dashboard
+Automatically analyze job descriptions and help applicants tailor their resumes for better matches by:
+- Extracting job requirements from any posting
+- Comparing requirements with your resume
+- Generating AI-powered optimization suggestions
+- Tracking resume versions for different jobs
+- Managing application status over time
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js installed
+- Node.js (v16 or higher)
 - Google Chrome browser
+- npm or yarn
 
 ### Installation
 
@@ -46,133 +31,154 @@ Automatically analyze job descriptions and help applicants tailor their resumes 
    npm install
    ```
 
-3. **Build TypeScript**
+3. **Build the extension**
    ```bash
    npm run build
    ```
 
-4. **Load extension in Chrome**
-   - Open Chrome → `chrome://extensions/`
+4. **Load in Chrome**
+   - Open `chrome://extensions/`
    - Enable "Developer mode" (top-right toggle)
    - Click "Load unpacked"
-   - Select the `extension` folder from this project
+   - Select the `extension` folder
 
 ### Usage
 
 1. Navigate to any job posting (LinkedIn, Indeed, etc.)
 2. Click the Gap Giraffe extension icon
 3. Click "Analyze This Job" button
-4. Extension extracts job details and shows analysis
+4. View job analysis and match score
 
-## 🛠️ Development
+## 📁 Project Structure
 
-### Tech Stack
-- **TypeScript** - Type-safe development
-- **Chrome Extension API** - Manifest V3
-- **Gemini Flash AI** - Resume optimization (coming in Stage 3)
-- **SQLite** - Local storage (coming in Stage 2)
-
-### Project Structure
 ```
 gap-giraffe/
-├── src/                    # TypeScript source files
-│   ├── types/             # Type definitions
-│   ├── background.ts      # Service worker
-│   ├── popup/             # Popup logic
-│   └── content/           # Job scraping
-├── extension/             # Extension files (load in Chrome)
-│   ├── dist/             # Compiled JS (auto-generated)
-│   ├── popup/            # HTML & CSS
-│   ├── icons/            # Extension icons
-│   └── manifest.json     # Extension config
-├── package.json
-└── tsconfig.json
+├── src/                      # TypeScript source files
+│   ├── background.ts        # Service worker (orchestration)
+│   ├── popup/              # Extension popup UI
+│   │   └── popup.ts
+│   ├── content/            # Job scraping scripts
+│   │   └── content.ts
+│   ├── db/                 # Database layer
+│   │   ├── storage-adapter.ts    # Abstract interface
+│   │   ├── indexeddb-adapter.ts  # IndexedDB implementation
+│   │   ├── database.ts           # Database manager
+│   │   └── types.ts              # Database types
+│   └── types/              # Shared TypeScript types
+│       └── index.ts
+├── extension/              # Extension files (load in Chrome)
+│   ├── manifest.json      # Extension configuration
+│   ├── dist/             # Compiled JavaScript (auto-generated)
+│   ├── popup/
+│   │   ├── popup.html
+│   │   └── popup.css
+│   └── icons/
+├── docs/                  # Documentation
+│   └── roadmap.md        # Development roadmap
+├── build.js              # esbuild bundler configuration
+├── tsconfig.json         # TypeScript configuration
+└── package.json          # Dependencies and scripts
 ```
 
-### Development Workflow
+## 🛠️ Development Commands
 
-**Edit code:**
 ```bash
-# Watch mode - auto-rebuilds on save
+# Build once
+npm run build
+
+# Watch mode (auto-rebuild on changes)
 npm run watch
 
-# One-time build
-npm run build
+# Clean build artifacts
+npm run clean
 ```
 
-**Test changes:**
-1. Make changes in `src/` TypeScript files
-2. Build compiles to `extension/dist/`
-3. Reload extension in Chrome (`chrome://extensions/`)
-4. Test on job posting pages
+## ✨ Features
 
-### Available Scripts
-- `npm run build` - Compile TypeScript once
-- `npm run watch` - Watch mode (auto-rebuild)
-- `npm run clean` - Remove compiled files
+### Current (Stage 2 Complete)
 
-## 🏗️ Development Stages
-
-### ✅ Stage 1: Foundation (Complete)
-- Chrome extension structure
-- TypeScript setup
-- Job scraping with heuristics
-- Manual trigger workflow
-
-### 🔄 Stage 2: Data Layer (In Progress)
-- SQLite database integration
-- Resume upload & storage
-- Job data persistence
-- Version management foundation
-
-### 📅 Stage 3: AI Integration
-- Gemini Flash API connection
-- Resume analysis
-- Match scoring
-- Optimization suggestions
-
-### 📅 Stage 4: Resume Optimization
-- Apply AI suggestions
-- Create resume versions per job
-- Certainty scoring
-- Diff visualization
-
-### 📅 Stage 5: Application Tracking
-- Status tracking (Applied, Interview, Offer, etc.)
-- Timeline view
-- Analytics dashboard
-- Notes and reminders
-
-## 🎨 Features
-
-### Job Analysis
-- Extracts job title, company, and full description
-- Works on any job site (LinkedIn, Indeed, company sites)
+✅ **Job Analysis**
+- Intelligent job scraping from any website
+- Extracts title, company, and description
 - Confidence scoring for extraction quality
 - Visual feedback on job pages
 
-### Smart Scraping
-Multiple extraction strategies:
-- Meta tags and structured data
-- Common HTML patterns
-- Heuristic-based content detection
-- Fallback to largest text blocks
+✅ **Data Management**
+- IndexedDB storage (native browser)
+- Job history tracking
+- Duplicate detection
+- Storage adapter pattern (easy to switch backends)
 
-### Type Safety
-- Full TypeScript coverage
-- Strict null checks
-- Chrome API types
-- Compile-time error detection
+✅ **User Interface**
+- Modern popup with gradient design
+- Loading states and error handling
+- Responsive layout
+- Settings and tracker navigation
+
+### Coming Soon (Stage 3+)
+
+⏳ **AI Integration**
+- Gemini Flash 1.5 for analysis
+- Resume vs job gap analysis
+- Match scoring
+- Optimization suggestions
+
+⏳ **Resume Management**
+- Upload and parse resumes (PDF, TXT, DOCX)
+- Create job-specific versions
+- Version comparison
+- Download optimized resumes
+
+⏳ **Application Tracking**
+- Status tracking (Applied, Interview, Offer, etc.)
+- Timeline view
+- Notes and reminders
+- Analytics dashboard
+
+See [docs/roadmap.md](docs/roadmap.md) for detailed development plan.
+
+## 🔧 Technologies
+
+**Frontend**
+- TypeScript (strict mode with full type safety)
+- Chrome Extension API (Manifest V3)
+- Vanilla JavaScript (no framework overhead)
+- Modern CSS (gradients, animations)
+
+**Build Tools**
+- esbuild (fast JavaScript bundler)
+- npm scripts for automation
+
+**Storage**
+- IndexedDB (native browser database)
+- Storage adapter pattern (future: SQLite, Cloud sync)
+
+**AI (Coming Soon)**
+- Google Gemini 1.5 Flash (default)
+- OpenAI GPT-4 (optional)
+- Anthropic Claude (optional)
+
+## 📊 Database Schema
+
+**Current Tables:**
+- `resumes` - Master resume storage
+- `resume_versions` - Job-specific optimized versions  
+- `jobs` - Extracted job postings
+- `applications` - Application tracking
+- `model_configs` - AI model settings
+
+See [src/db/indexeddb-adapter.ts](src/db/indexeddb-adapter.ts) for schema details.
+
+## 🤝 Contributing
+
+This is currently a personal project in active development. Issues and suggestions are welcome!
 
 ## 📝 License
 
 MIT
 
-## 🤝 Contributing
-
-This is currently a personal project in active development. Feel free to open issues for bugs or suggestions!
-
 ---
 
-**Current Version:** 1.0.0 (Stage 1)  
+**Version:** 1.0.0 (Stage 2 Complete)  
+**Status:** Active Development  
 **Last Updated:** November 19, 2025
