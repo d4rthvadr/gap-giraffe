@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Resume Optimizer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎯 Job Resume Optimizer</h1>
+    </header>
+    
+    <main>
+      <div id="status-section" class="section">
+        <div id="current-url" class="url-display">
+          <span class="label">Current Page:</span>
+          <span id="page-url" class="url-text">Loading...</span>
+        </div>
+      </div>
+      
+      <div class="section">
+        <button id="analyze-btn" class="primary-btn">
+          <span class="btn-icon">🔍</span>
+          Analyze This Job
+        </button>
+      </div>
+      
+      <div id="loading-section" class="section hidden">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Analyzing job posting...</p>
+      </div>
+      
+      <div id="result-section" class="section hidden">
+        <div class="result-card">
+          <h3>Analysis Complete ✓</h3>
+          <div class="result-stats">
+            <div class="stat">
+              <span class="stat-label">Match Score:</span>
+              <span id="match-score" class="stat-value">--</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Certainty:</span>
+              <span id="certainty-score" class="stat-value">--</span>
+            </div>
+          </div>
+          <button id="view-suggestions-btn" class="secondary-btn">View Suggestions</button>
+        </div>
+      </div>
+      
+      <div id="error-section" class="section hidden">
+        <div class="error-card">
+          <span class="error-icon">⚠️</span>
+          <p id="error-message" class="error-text"></p>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <button id="options-btn" class="link-btn">⚙️ Settings</button>
+      <button id="tracker-btn" class="link-btn">📊 Job Tracker</button>
+    </footer>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
