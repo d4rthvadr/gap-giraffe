@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gap Giraffe - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚙️ Gap Giraffe Settings</h1>
+      <p class="subtitle">Configure AI models and API keys</p>
+    </header>
+
+    <main>
+      <!-- API Configuration Section -->
+      <section class="section">
+        <h2>AI Model Configuration</h2>
+        
+        <div class="form-group">
+          <label for="ai-provider">AI Provider</label>
+          <select id="ai-provider" class="input">
+            <option value="gemini">Google Gemini (Recommended)</option>
+            <option value="openai" disabled>OpenAI (Coming Soon)</option>
+            <option value="anthropic" disabled>Anthropic Claude (Coming Soon)</option>
+          </select>
+          <p class="help-text">Choose your preferred AI model provider</p>
+        </div>
+
+        <div class="form-group" id="gemini-config">
+          <label for="gemini-api-key">Gemini API Key</label>
+          <input 
+            type="password" 
+            id="gemini-api-key" 
+            class="input" 
+            placeholder="Enter your Gemini API key"
+          />
+          <p class="help-text">
+            Get your free API key from 
+            <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="model-name">Model</label>
+          <select id="model-name" class="input">
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast & Cheap)</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro (More Capable)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="temperature">Temperature (Creativity)</label>
+          <input 
+            type="range" 
+            id="temperature" 
+            class="slider" 
+            min="0" 
+            max="1" 
+            step="0.1" 
+            value="0.7"
+          />
+          <span id="temperature-value" class="slider-value">0.7</span>
+          <p class="help-text">Lower = more focused, Higher = more creative</p>
+        </div>
+
+        <button id="save-btn" class="primary-btn">
+          Save Configuration
+        </button>
+
+        <button id="test-btn" class="secondary-btn">
+          Test API Connection
+        </button>
+
+        <div id="status-message" class="status-message hidden"></div>
+      </section>
+
+      <!-- Model Info Section -->
+      <section class="section info-section">
+        <h3>📊 Model Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Context Window:</span>
+            <span class="info-value" id="context-window">1M tokens</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Cost per Analysis:</span>
+            <span class="info-value" id="cost-estimate">~$0.001</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-value status" id="api-status">Not Configured</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Privacy Section -->
+      <section class="section">
+        <h3>🔒 Privacy & Data</h3>
+        <ul class="privacy-list">
+          <li>✅ All data stored locally on your device</li>
+          <li>✅ API keys encrypted in browser storage</li>
+          <li>✅ Job data and resumes never leave your computer</li>
+          <li>✅ AI analysis is done directly via your API key</li>
+          <li>⚠️ No cloud backup (clearing browser data will delete everything)</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <script src="../dist/options/options.js"></script>
+</body>
+</html>

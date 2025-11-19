@@ -44,3 +44,11 @@ esbuild.build({
   outfile: 'extension/dist/content/content.js',
   platform: 'browser',
 }).then(() => console.log('✓ Content script built')).catch(() => process.exit(1));
+
+// Build options page
+esbuild.build({
+  ...buildConfig,
+  entryPoints: ['src/options/options.ts'],
+  outfile: 'extension/dist/options/options.js',
+  platform: 'browser',
+}).then(() => console.log('✓ Options page built')).catch(() => process.exit(1));

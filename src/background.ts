@@ -3,6 +3,8 @@
 import type { Message, MessageResponse, StorageData, ModelConfig } from './types';
 import type { JobData } from './types';
 import { db } from './db/database';
+import { aiService } from './ai/ai-service';
+import type { AIModelConfig } from './ai/types';
 
 console.log('Job Resume Optimizer - Background Service Worker Started');
 
@@ -128,7 +130,7 @@ async function handleJobExtracted(
       sendResponse({ 
         success: true, 
         message: 'Job already in database',
-        data: { jobId: existingJob.id }
+        data: { jobId: existingJob.id, analyzed: existingJob.analyzed }
       });
       return;
     }
@@ -142,26 +144,72 @@ async function handleJobExtracted(
       company_confidence: job.company.confidence || null,
       description: job.description.value,
       description_confidence: job.description.confidence,
-      requirements: null, // TODO: Extract requirements in future
+      requirements: null,
       scraped_at: job.extractedAt,
       analyzed: false
     });
     
     console.log('Job saved to database with ID:', jobId);
     
-    // TODO: Trigger AI analysis (Stage 3)
+    // Try to analyze with AI if configured
+    try {
+      const aiConfig = await chrome.storage.local.get(['aiConfig']);
+      
+      if (aiConfig.aiConfig) {
+        console.log('AI configured, starting analysis...');
+        
+        // Initialize AI service if not already done
+        if (!aiService.isReady()) {
+          await aiService.initialize(aiConfig.aiConfig as AIModelConfig);
+        }
+        
+        // Analyze job with AI
+        const analysisResult = await aiService.analyzeJob({
+          jobTitle: job.title.value,
+          jobCompany: job.company.value,
+          jobDescription: job.description.value
+        });
+        
+        if (analysisResult.success && analysisResult.data) {
+          console.log('AI analysis complete:', analysisResult.data);
+          
+          // Update job with analysis results
+          await db.updateJob(jobId, {
+            analyzed: true,
+            requirements: analysisResult.data.keyRequirements.join('\n')
+          });
+          
+          sendResponse({ 
+            success: true, 
+            message: 'Job analyzed with AI',
+            data: {
+              jobId,
+              analysis: analysisResult.data
+            }
+          });
+          return;
+        } else {
+          console.warn('AI analysis failed:', analysisResult.error);
+        }
+      }
+    } catch (aiError) {
+      console.error('AI analysis error (non-fatal):', aiError);
+    }
     
+    // Fallback: Job saved but not analyzed
     sendResponse({ 
       success: true, 
-      message: 'Job data saved successfully',
-      data: { jobId }
+      message: 'Job saved (AI not configured)',
+      data: { jobId, analyzed: false }
     });
+    
   } catch (error) {
     console.error('Error handling job data:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     sendResponse({ success: false, error: errorMessage });
   }
 }
+
 
 // Get current configuration
 async function handleGetConfig(sendResponse: (response: MessageResponse<StorageData>) => void): Promise<void> {

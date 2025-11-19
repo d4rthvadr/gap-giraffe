@@ -49,13 +49,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (response.success) {
         console.log('Job analysis started successfully');
         
-        // For now, show a mock success (we'll integrate real analysis later)
-        setTimeout(() => {
-          showResults({
-            matchScore: 85,
-            certaintyScore: 92
-          });
-        }, 2000);
+        // Wait for actual analysis results
+        // Listen for JOB_EXTRACTED completion message
+        chrome.runtime.onMessage.addListener((msg: Message) => {
+          if (msg.type === 'JOB_EXTRACTED' && msg.data) {
+            const data = msg.data as { analysis?: { matchScore: number; certaintyScore: number } };
+            if (data.analysis) {
+              showResults({
+                matchScore: data.analysis.matchScore,
+                certaintyScore: data.analysis.certaintyScore
+              });
+            } else {
+              // AI not configured
+              showError('AI not configured. Please add your Gemini API key in settings.');
+            }
+          }
+        });
+        
       } else {
         throw new Error(response.error || 'Failed to analyze job');
       }
