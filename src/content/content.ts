@@ -211,7 +211,18 @@ console.log('Job Resume Optimizer - Content Script Loaded');
       data: jobData
     };
     
+    console.log('Sending JOB_EXTRACTED message to background:', message);
+    
     chrome.runtime.sendMessage(message, (response: MessageResponse) => {
+      // Check for errors
+      if (chrome.runtime.lastError) {
+        console.error('Error sending message:', chrome.runtime.lastError);
+        showFeedback('⚠ Could not send to background script', 'error');
+        return;
+      }
+      
+      console.log('Received response from background:', response);
+      
       if (response && response.success) {
         showFeedback('✓ Job analysis complete!', 'success');
       } else {

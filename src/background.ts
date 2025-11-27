@@ -135,10 +135,21 @@ async function handleJobExtracted(
     const existingJob = await db.getJobByUrl(job.url);
     
     if (existingJob) {
-      console.log('Job already exists in database:', existingJob.id);
+      console.log('Job already exists in database:', existingJob.id, 'analyzed:', existingJob.analyzed);
+      
+      // Broadcast to popup (so it doesn't timeout)
+      chrome.runtime.sendMessage({
+        type: 'JOB_EXTRACTED',
+        data: {
+          jobId: existingJob.id,
+          analyzed: existingJob.analyzed,
+          cached: true
+        }
+      }).catch(() => console.log('Popup closed'));
+      
       sendResponse({ 
         success: true, 
-        message: 'Job already in database',
+        message: existingJob.analyzed ? 'Job already analyzed (cached)' : 'Job already saved',
         data: { jobId: existingJob.id, analyzed: existingJob.analyzed }
       });
       return;
