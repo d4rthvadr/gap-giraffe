@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Manager - Gap Giraffe</title>
+  <link rel="stylesheet" href="resumes.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📄 Resume Manager</h1>
+      <p class="subtitle">Upload and manage your resumes</p>
+    </header>
+
+    <main>
+      <!-- Upload Section -->
+      <section class="section upload-section">
+        <h2>Upload Resume</h2>
+        
+        <div class="upload-area" id="upload-area">
+          <div class="upload-icon">📤</div>
+          <p class="upload-text">Drag & drop your resume here</p>
+          <p class="upload-subtext">or</p>
+          <button class="secondary-btn" id="browse-btn">Browse Files</button>
+          <input type="file" id="file-input" accept=".txt,.pdf" hidden>
+          <p class="help-text">Supported formats: TXT, PDF (max 5MB)</p>
+        </div>
+
+        <div id="upload-status" class="status-message hidden"></div>
+      </section>
+
+      <!-- Resume List Section -->
+      <section class="section">
+        <h2>Your Resumes</h2>
+        
+        <div id="resume-list" class="resume-list">
+          <div class="loading">Loading resumes...</div>
+        </div>
+      </section>
+
+      <!-- Resume Preview Section -->
+      <section class="section preview-section hidden" id="preview-section">
+        <h2>Resume Preview</h2>
+        
+        <div class="preview-header">
+          <h3 id="preview-name"></h3>
+          <div class="preview-meta">
+            <span id="preview-confidence" class="confidence-badge"></span>
+            <span id="preview-format" class="format-badge"></span>
+          </div>
+        </div>
+
+        <div class="preview-content">
+          <!-- Summary -->
+          <div class="preview-block" id="preview-summary-block">
+            <h4>Summary</h4>
+            <p id="preview-summary"></p>
+          </div>
+
+          <!-- Experience -->
+          <div class="preview-block">
+            <h4>Experience</h4>
+            <div id="preview-experience"></div>
+          </div>
+
+          <!-- Education -->
+          <div class="preview-block">
+            <h4>Education</h4>
+            <div id="preview-education"></div>
+          </div>
+
+          <!-- Skills -->
+          <div class="preview-block">
+            <h4>Skills</h4>
+            <div id="preview-skills" class="skills-grid"></div>
+          </div>
+
+          <!-- Certifications -->
+          <div class="preview-block hidden" id="preview-certs-block">
+            <h4>Certifications</h4>
+            <div id="preview-certs"></div>
+          </div>
+        </div>
+
+        <div class="preview-actions">
+          <button class="primary-btn" id="set-master-btn">Set as Master Resume</button>
+          <button class="danger-btn" id="delete-resume-btn">Delete Resume</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../dist/resumes/resumes.js"></script>
+</body>
+</html>

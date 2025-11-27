@@ -47,24 +47,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       const response = await chrome.runtime.sendMessage(message) as MessageResponse;
       
       if (response.success) {
-        console.log('Job analysis started successfully');
+        console.log('Content script injected, waiting for analysis...');
         
-        // Wait for actual analysis results
-        // Listen for JOB_EXTRACTED completion message
-        chrome.runtime.onMessage.addListener((msg: Message) => {
-          if (msg.type === 'JOB_EXTRACTED' && msg.data) {
-            const data = msg.data as { analysis?: { matchScore: number; certaintyScore: number } };
-            if (data.analysis) {
-              showResults({
-                matchScore: data.analysis.matchScore,
-                certaintyScore: data.analysis.certaintyScore
-              });
-            } else {
-              // AI not configured
-              showError('AI not configured. Please add your Gemini API key in settings.');
-            }
+        // Wait for analysis to complete (with timeout)
+        const analysisComplete = await waitForAnalysis(30000); // 30 second timeout
+        
+        if (analysisComplete) {
+          console.log('Analysis complete:', analysisComplete);
+          
+          if (analysisComplete.analysis) {
+            showResults({
+              matchScore: analysisComplete.analysis.matchScore,
+              certaintyScore: analysisComplete.analysis.certaintyScore
+            });
+          } else {
+            // Job saved but no AI analysis
+            showError('Job saved! Configure AI in settings for match analysis.');
           }
-        });
+        } else {
+          showError('Analysis timed out. Check background console for details.');
+        }
         
       } else {
         throw new Error(response.error || 'Failed to analyze job');
@@ -75,16 +77,43 @@ document.addEventListener('DOMContentLoaded', async () => {
       showError(errorMsg);
     }
   });
+
+  /**
+   * Wait for job analysis to complete
+   */
+  function waitForAnalysis(timeout: number): Promise<{ analysis?: { matchScore: number; certaintyScore: number } } | null> {
+    console.log('Waiting for analysis results...');
+    
+    return new Promise((resolve) => {
+      const timeoutId = setTimeout(() => {
+        console.log('Analysis timed out after', timeout, 'ms');
+        chrome.runtime.onMessage.removeListener(listener);
+        resolve(null);
+      }, timeout);
+
+      const listener = (msg: Message) => {
+        console.log('Popup received message:', msg.type, msg.data);
+        
+        if (msg.type === 'JOB_EXTRACTED' && msg.data) {
+          console.log('Analysis complete! Received data:', msg.data);
+          clearTimeout(timeoutId);
+          chrome.runtime.onMessage.removeListener(listener);
+          resolve(msg.data as { analysis?: { matchScore: number; certaintyScore: number } });
+        }
+      };
+
+      chrome.runtime.onMessage.addListener(listener);
+    });
+    }
   
   // Options button click handler
   optionsBtn.addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
   });
   
-  // Tracker button click handler (placeholder for now)
+  // Tracker button click handler (opens resumes page)
   trackerBtn.addEventListener('click', () => {
-    // TODO: Open job tracker page
-    console.log('Job tracker clicked - to be implemented');
+    chrome.tabs.create({ url: chrome.runtime.getURL('resumes/resumes.html') });
   });
   
   // Show results

@@ -5,6 +5,7 @@ import type { JobData } from './types';
 import { db } from './db/database';
 import { aiService } from './ai/ai-service';
 import type { AIModelConfig } from './ai/types';
+import { ResumeService } from './resume/resume-service';
 
 console.log('Job Resume Optimizer - Background Service Worker Started');
 
@@ -54,13 +55,17 @@ async function initializeExtension(): Promise<void> {
 // Listen for messages from popup and content scripts
 chrome.runtime.onMessage.addListener((
   message: Message,
-  _sender: chrome.runtime.MessageSender,
+  sender: chrome.runtime.MessageSender,
   sendResponse: (response: MessageResponse) => void
 ): boolean => {
-  console.log('Message received:', message.type);
+  console.log('=== MESSAGE RECEIVED ===');
+  console.log('Type:', message.type);
+  console.log('From:', sender.tab ? `Tab ${sender.tab.id}` : 'Extension');
+  console.log('Data:', message.data);
   
   switch (message.type) {
     case 'ANALYZE_JOB':
+      console.log('Handling ANALYZE_JOB request');
       handleAnalyzeJob(sendResponse);
       return true; // Keep channel open for async response
       
@@ -73,6 +78,7 @@ chrome.runtime.onMessage.addListener((
       return true;
       
     case 'JOB_EXTRACTED':
+      console.log('Handling JOB_EXTRACTED - starting async processing');
       handleJobExtracted(message.data, sendResponse);
       return true;
       
@@ -114,6 +120,9 @@ async function handleJobExtracted(
   jobData: unknown,
   sendResponse: (response: MessageResponse) => void
 ): Promise<void> {
+  console.log('=== HANDLE JOB EXTRACTED STARTED ===');
+  console.log('Received job data:', jobData);
+  
   try {
     console.log('Job data received from content script:', jobData);
     
@@ -163,11 +172,15 @@ async function handleJobExtracted(
           await aiService.initialize(aiConfig.aiConfig as AIModelConfig);
         }
         
-        // Analyze job with AI
+        // Try to get master resume for full analysis
+        const masterResume = await ResumeService.getMasterResume();
+        
+        // Analyze job with AI (with or without resume)
         const analysisResult = await aiService.analyzeJob({
           jobTitle: job.title.value,
           jobCompany: job.company.value,
-          jobDescription: job.description.value
+          jobDescription: job.description.value,
+          resumeContent: masterResume?.resume.original_content
         });
         
         if (analysisResult.success && analysisResult.data) {
@@ -179,12 +192,32 @@ async function handleJobExtracted(
             requirements: analysisResult.data.keyRequirements.join('\n')
           });
           
+    // Broadcast results to popup
+    console.log('Broadcasting JOB_EXTRACTED to popup with analysis:', {
+      jobId,
+      hasAnalysis: !!analysisResult.data,
+      matchScore: analysisResult.data?.matchScore
+    });
+    
+    chrome.runtime.sendMessage({
+      type: 'JOB_EXTRACTED',
+      data: {
+        jobId,
+        analysis: analysisResult.data,
+        hasResume: !!masterResume
+      }
+    }).catch((error) => {
+      // Popup might be closed, ignore error
+      console.log('Could not send to popup:', error);
+    });
+          
           sendResponse({ 
             success: true, 
-            message: 'Job analyzed with AI',
+            message: masterResume ? 'Job analyzed with resume match' : 'Job analyzed (no resume)',
             data: {
               jobId,
-              analysis: analysisResult.data
+              analysis: analysisResult.data,
+              hasResume: !!masterResume
             }
           });
           return;
@@ -195,6 +228,18 @@ async function handleJobExtracted(
     } catch (aiError) {
       console.error('AI analysis error (non-fatal):', aiError);
     }
+    
+    // Fallback: Job saved but not analyzed
+    // Broadcast to popup
+    chrome.runtime.sendMessage({
+      type: 'JOB_EXTRACTED',
+      data: {
+        jobId,
+        analyzed: false
+      }
+    }).catch(() => {
+      console.log('Popup closed, could not send results');
+    });
     
     // Fallback: Job saved but not analyzed
     sendResponse({ 

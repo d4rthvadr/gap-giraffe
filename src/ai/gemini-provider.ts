@@ -82,15 +82,15 @@ ${request.resumeContent}
 
 Provide a comprehensive analysis in the following JSON format:
 {
-  "matchScore": <number 0-100>,
+  "matchScore": <number 0-100, overall fit for this role>,
   "certaintyScore": <number 0-100, how confident you are in this analysis>,
-  "keyRequirements": [<array of main job requirements extracted>],
+  "keyRequirements": [<array of main job requirements extracted from posting>],
   "missingSkills": [<array of required skills the candidate lacks>],
   "strengths": [<array of candidate's strong points for this role>],
   "analysis": {
-    "technicalFit": <number 0-100>,
-    "experienceFit": <number 0-100>,
-    "culturalFit": <number 0-100>
+    "technicalFit": <number 0-100, technical skills match>,
+    "experienceFit": <number 0-100, experience level match>,
+    "culturalFit": <number 0-100, based on job description tone and candidate background>
   },
   "suggestions": [
     {
@@ -98,15 +98,22 @@ Provide a comprehensive analysis in the following JSON format:
       "type": "add|modify|remove|reorder",
       "section": "summary|experience|skills|education",
       "priority": "high|medium|low",
-      "current": "<current text if applicable>",
+      "current": "<current text if modifying>",
       "suggested": "<suggested improvement>",
       "reason": "<why this change helps>",
-      "impact": <expected score improvement 0-100>
+      "impact": <expected score improvement 0-20>
     }
   ]
 }
 
-Be specific, actionable, and focus on ATS optimization and keyword matching.`;
+Be specific and actionable. Focus on:
+1. ATS optimization (keyword matching)
+2. Quantifiable achievements
+3. Relevant experience highlighting
+4. Skills alignment
+5. Format and structure improvements
+
+Provide at least 5-10 concrete suggestions.`;
     } else {
       // No resume yet - just analyze the job requirements
       return `You are an expert job requirements analyst. Analyze the following job posting and extract key information.

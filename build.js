@@ -52,3 +52,11 @@ esbuild.build({
   outfile: 'extension/dist/options/options.js',
   platform: 'browser',
 }).then(() => console.log('✓ Options page built')).catch(() => process.exit(1));
+
+// Build resumes page
+esbuild.build({
+  ...buildConfig,
+  entryPoints: ['src/resumes/resumes.ts'],
+  outfile: 'extension/dist/resumes/resumes.js',
+  platform: 'browser',
+}).then(() => console.log('✓ Resumes page built')).catch(() => process.exit(1));
