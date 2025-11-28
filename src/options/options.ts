@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         modelName: modelSelect.value,
         apiKey: apiKeyInput.value.trim(),
         temperature: parseFloat(temperatureSlider.value),
-        maxTokens: 2048
+        maxTokens: 8192  // Increased to prevent truncation
       };
 
       if (!config.apiKey) {

@@ -34,6 +34,8 @@ export interface Job {
   requirements: string | null;
   scraped_at: string;
   analyzed: boolean;
+  analysis_result?: string;  // JSON string of JobAnalysisResult
+  match_score?: number;      // Quick access to score (0-100)
 }
 
 export interface Application {

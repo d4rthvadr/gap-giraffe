@@ -36,8 +36,11 @@ export class IndexedDBAdapter extends StorageAdapter {
         }
 
         if (!db.objectStoreNames.contains('jobs')) {
-          const jobStore = db.createObjectStore('jobs', { keyPath: 'id', autoIncrement: true });
-          jobStore.createIndex('url', 'url', { unique: true });
+          // Jobs table
+          const jobsStore = db.createObjectStore('jobs', { keyPath: 'id', autoIncrement: true });
+          jobsStore.createIndex('url', 'url', { unique: true });
+          jobsStore.createIndex('analyzed', 'analyzed', { unique: false });
+          jobsStore.createIndex('match_score', 'match_score', { unique: false });
         }
 
         if (!db.objectStoreNames.contains('applications')) {
@@ -56,7 +59,7 @@ export class IndexedDBAdapter extends StorageAdapter {
           if (store) {
             store.add({
               provider: 'gemini',
-              model_name: 'gemini-1.5-flash',
+              model_name: 'gemini-2.5-flash',
               api_key: null,
               cost_per_token: null,
               is_default: true,
@@ -116,11 +119,11 @@ export class IndexedDBAdapter extends StorageAdapter {
   async getMasterResume(): Promise<Resume | null> {
     return new Promise((resolve, reject) => {
       const store = this.getObjectStore('resumes');
-      const index = store.index('is_master');
-      const request = index.openCursor(IDBKeyRange.only(true));
+      const request = store.getAll();
       request.onsuccess = () => {
-        const cursor = request.result;
-        resolve(cursor ? cursor.value : null);
+        const resumes = request.result as Resume[];
+        const master = resumes.find(r => r.is_master);
+        resolve(master || null);
       };
       request.onerror = () => reject(request.error);
     });

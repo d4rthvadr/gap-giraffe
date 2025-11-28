@@ -56,10 +56,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           console.log('Analysis complete:', analysisComplete);
           
           if (analysisComplete.analysis) {
-            showResults({
-              matchScore: analysisComplete.analysis.matchScore,
-              certaintyScore: analysisComplete.analysis.certaintyScore
-            });
+            // Open results page in new tab
+            const resultsUrl = chrome.runtime.getURL(`results/results.html?jobId=${analysisComplete.jobId}`);
+            chrome.tabs.create({ url: resultsUrl });
+            
+            // Close popup
+            window.close();
           } else {
             // Job saved but no AI analysis
             showError('Job saved! Configure AI in settings for match analysis.');
@@ -81,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   /**
    * Wait for job analysis to complete
    */
-  function waitForAnalysis(timeout: number): Promise<{ analysis?: { matchScore: number; certaintyScore: number } } | null> {
+  function waitForAnalysis(timeout: number): Promise<{ jobId: number; analysis?: { matchScore: number; certaintyScore: number } } | null> {
     console.log('Waiting for analysis results...');
     
     return new Promise((resolve) => {
@@ -98,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           console.log('Analysis complete! Received data:', msg.data);
           clearTimeout(timeoutId);
           chrome.runtime.onMessage.removeListener(listener);
-          resolve(msg.data as { analysis?: { matchScore: number; certaintyScore: number } });
+          resolve(msg.data as { jobId: number; analysis?: { matchScore: number; certaintyScore: number } });
         }
       };
 
@@ -116,19 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('resumes/resumes.html') });
   });
   
-  // Show results
-  function showResults(data: AnalysisResult): void {
-    loadingSection.classList.add('hidden');
-    analyzeBtn.disabled = false;
-    
-    const matchScoreElement = document.getElementById('match-score') as HTMLSpanElement;
-    const certaintyScoreElement = document.getElementById('certainty-score') as HTMLSpanElement;
-    
-    matchScoreElement.textContent = data.matchScore + '%';
-    certaintyScoreElement.textContent = data.certaintyScore + '%';
-    
-    resultSection.classList.remove('hidden');
-  }
+
   
   // Show error
   function showError(message: string): void {

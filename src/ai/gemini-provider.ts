@@ -155,6 +155,8 @@ Focus on extracting technical requirements, required experience level, and key q
   private async callGeminiAPI(prompt: string): Promise<AIResponse<string>> {
     try {
       const url = `${GEMINI_API_BASE}/models/${this.config.modelName}:generateContent?key=${this.config.apiKey}`;
+      console.log(" Gemini API URL:", url);
+      console.log(" Gemini API Prompt:", prompt);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -169,7 +171,8 @@ Focus on extracting technical requirements, required experience level, and key q
           }],
           generationConfig: {
             temperature: this.config.temperature || 0.7,
-            maxOutputTokens: this.config.maxTokens || 2048,
+            // maxOutputTokens: this.config.maxTokens || 8192,  // Increased to prevent truncation
+            maxOutputTokens: 8192,
             responseMimeType: 'application/json'
           }
         })
@@ -187,6 +190,11 @@ Focus on extracting technical requirements, required experience level, and key q
         throw new Error('No response from Gemini API');
       }
 
+      console.log(" Gemini API Response:", text);
+
+      // TODO: wrap json extraction in try/catch
+      const analysisData = JSON.parse(text);
+      console.log(" Gemini API Analysis Data:", analysisData);
       return {
         success: true,
         data: text
@@ -201,7 +209,16 @@ Focus on extracting technical requirements, required experience level, and key q
 
   private parseAnalysisResponse(jsonText: string): JobAnalysisResult {
     try {
-      const parsed = JSON.parse(jsonText);
+      // Try to parse JSON directly
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonText);
+      } catch (parseError) {
+        // If JSON is truncated, try to fix it
+        console.warn('JSON parse failed, attempting to fix truncated response');
+        const fixed = this.fixTruncatedJSON(jsonText);
+        parsed = JSON.parse(fixed);
+      }
       
       // Ensure all required fields exist with defaults
       return {
@@ -228,6 +245,7 @@ Focus on extracting technical requirements, required experience level, and key q
       };
     } catch (error) {
       console.error('Failed to parse Gemini response:', error);
+      console.error('Raw response:', jsonText);
       // Return empty analysis on parse error
       return {
         matchScore: 0,
@@ -243,5 +261,28 @@ Focus on extracting technical requirements, required experience level, and key q
         suggestions: []
       };
     }
+  }
+
+  /**
+   * Attempt to fix truncated JSON by closing open structures
+   */
+  private fixTruncatedJSON(jsonText: string): string {
+    let fixed = jsonText.trim();
+    
+    // Count open vs closed braces/brackets
+    const openBraces = (fixed.match(/{/g) || []).length;
+    const closeBraces = (fixed.match(/}/g) || []).length;
+    const openBrackets = (fixed.match(/\[/g) || []).length;
+    const closeBrackets = (fixed.match(/]/g) || []).length;
+    
+    // Close missing brackets and braces
+    for (let i = 0; i < (openBrackets - closeBrackets); i++) {
+      fixed += ']';
+    }
+    for (let i = 0; i < (openBraces - closeBraces); i++) {
+      fixed += '}';
+    }
+    
+    return fixed;
   }
 }

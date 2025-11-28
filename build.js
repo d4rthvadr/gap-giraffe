@@ -60,3 +60,11 @@ esbuild.build({
   outfile: 'extension/dist/resumes/resumes.js',
   platform: 'browser',
 }).then(() => console.log('✓ Resumes page built')).catch(() => process.exit(1));
+
+// Build results page
+esbuild.build({
+  ...buildConfig,
+  entryPoints: ['src/results/results.ts'],
+  outfile: 'extension/dist/results/results.js',
+  platform: 'browser',
+}).then(() => console.log('✓ Results page built')).catch(() => process.exit(1));
