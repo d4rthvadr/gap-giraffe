@@ -43,9 +43,27 @@ export interface Application {
   job_id: number;
   resume_version_id: number | null;
   status: ApplicationStatus;
+  status_history: StatusHistoryEntry[];  // Track all status changes
   applied_at: string | null;
+  interview_date: string | null;         // When interview is scheduled
+  interview_notes: string | null;        // Notes from interview
+  reminders: Reminder[];                 // Follow-up reminders
   updated_at: string;
   notes: string | null;
+}
+
+export interface StatusHistoryEntry {
+  status: ApplicationStatus;
+  timestamp: number;                     // Unix timestamp
+  note?: string;                         // Optional note about the change
+}
+
+export interface Reminder {
+  id: string;                            // Unique ID (UUID)
+  title: string;                         // e.g., "Follow up on application"
+  due_date: number;                      // Unix timestamp
+  completed: boolean;
+  created_at: number;
 }
 
 export type ApplicationStatus = 

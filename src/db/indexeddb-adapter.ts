@@ -1,10 +1,10 @@
 // IndexedDB implementation of the storage adapter
 
 import { StorageAdapter } from './storage-adapter';
-import type { Resume, ResumeVersion, Job, Application, ModelConfig } from './types';
+import type { Resume, ResumeVersion, Job, Application, ModelConfig, StatusHistoryEntry, Reminder, ApplicationStatus } from './types';
 
 const DB_NAME = 'GapGiraffeDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export class IndexedDBAdapter extends StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -66,6 +66,41 @@ export class IndexedDBAdapter extends StorageAdapter {
               is_active: true,
               created_at: new Date().toISOString()
             });
+          }
+        }
+
+        // Migration from v1 to v2: Add new fields to existing applications
+        if (event.oldVersion < 2) {
+          console.log('Migrating database from v1 to v2...');
+          
+          const transaction = (event.target as IDBOpenDBRequest).transaction;
+          if (transaction) {
+            const appStore = transaction.objectStore('applications');
+            const getAllRequest = appStore.getAll();
+            
+            getAllRequest.onsuccess = () => {
+              const applications = getAllRequest.result as Application[];
+              console.log(`Migrating ${applications.length} applications...`);
+              
+              applications.forEach(app => {
+                // Add new fields with defaults if they don't exist
+                const migrated: Application = {
+                  ...app,
+                  status_history: app.status_history || [{
+                    status: app.status,
+                    timestamp: new Date(app.updated_at || Date.now()).getTime(),
+                    note: 'Existing application'
+                  }],
+                  interview_date: (app as any).interview_date || null,
+                  interview_notes: (app as any).interview_notes || null,
+                  reminders: (app as any).reminders || []
+                };
+                
+                appStore.put(migrated);
+              });
+              
+              console.log('Migration complete');
+            };
           }
         }
 
@@ -293,6 +328,176 @@ export class IndexedDBAdapter extends StorageAdapter {
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
+  }
+
+  /**
+   * Update application status and add to history
+   */
+  async updateApplicationStatus(id: number, status: ApplicationStatus, note?: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const existing = await this.getApplication(id);
+      if (!existing) {
+        reject(new Error('Application not found'));
+        return;
+      }
+
+      const historyEntry: StatusHistoryEntry = {
+        status,
+        timestamp: Date.now(),
+        note
+      };
+
+      const updated: Application = {
+        ...existing,
+        status,
+        status_history: [...existing.status_history, historyEntry],
+        updated_at: new Date().toISOString()
+      };
+
+      const store = this.getObjectStore('applications', 'readwrite');
+      const request = store.put(updated);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Add reminder to application
+   */
+  async addReminder(applicationId: number, reminder: Omit<Reminder, 'id' | 'created_at'>): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const existing = await this.getApplication(applicationId);
+      if (!existing) {
+        reject(new Error('Application not found'));
+        return;
+      }
+
+      const newReminder: Reminder = {
+        id: crypto.randomUUID(),
+        ...reminder,
+        created_at: Date.now()
+      };
+
+      const updated: Application = {
+        ...existing,
+        reminders: [...existing.reminders, newReminder],
+        updated_at: new Date().toISOString()
+      };
+
+      const store = this.getObjectStore('applications', 'readwrite');
+      const request = store.put(updated);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Mark reminder as complete/incomplete
+   */
+  async completeReminder(applicationId: number, reminderId: string, completed: boolean = true): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const existing = await this.getApplication(applicationId);
+      if (!existing) {
+        reject(new Error('Application not found'));
+        return;
+      }
+
+      const updated: Application = {
+        ...existing,
+        reminders: existing.reminders.map(r => 
+          r.id === reminderId ? { ...r, completed } : r
+        ),
+        updated_at: new Date().toISOString()
+      };
+
+      const store = this.getObjectStore('applications', 'readwrite');
+      const request = store.put(updated);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Get applications by status
+   */
+  async getApplicationsByStatus(status: ApplicationStatus): Promise<Application[]> {
+    return new Promise((resolve, reject) => {
+      const store = this.getObjectStore('applications');
+      const index = store.index('status');
+      const request = index.getAll(status);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Get application statistics for analytics
+   */
+  async getApplicationStats(): Promise<{
+    total: number;
+    byStatus: Record<ApplicationStatus, number>;
+    averageTimeToInterview: number | null;
+    averageTimeToOffer: number | null;
+    successRate: number;
+  }> {
+    const applications = await this.getAllApplications();
+    
+    const stats = {
+      total: applications.length,
+      byStatus: {
+        saved: 0,
+        applied: 0,
+        screening: 0,
+        interview_scheduled: 0,
+        interview_completed: 0,
+        offer: 0,
+        accepted: 0,
+        rejected: 0,
+        withdrawn: 0
+      } as Record<ApplicationStatus, number>,
+      averageTimeToInterview: null as number | null,
+      averageTimeToOffer: null as number | null,
+      successRate: 0
+    };
+
+    // Count by status
+    applications.forEach(app => {
+      stats.byStatus[app.status] = (stats.byStatus[app.status] || 0) + 1;
+    });
+
+    // Calculate success rate (offers / total)
+    const totalOffers = stats.byStatus.offer + stats.byStatus.accepted;
+    stats.successRate = applications.length > 0 ? (totalOffers / applications.length) * 100 : 0;
+
+    // Calculate average time to interview
+    const interviewApps = applications.filter(app => 
+      app.interview_date && app.applied_at
+    );
+    if (interviewApps.length > 0) {
+      const totalTime = interviewApps.reduce((sum, app) => {
+        const applied = new Date(app.applied_at!).getTime();
+        const interview = new Date(app.interview_date!).getTime();
+        return sum + (interview - applied);
+      }, 0);
+      stats.averageTimeToInterview = totalTime / interviewApps.length / (1000 * 60 * 60 * 24); // Days
+    }
+
+    // Calculate average  time to offer
+    const offerApps = applications.filter(app => {
+      const offerEntry = app.status_history.find(h => h.status === 'offer');
+      const appliedEntry = app.status_history.find(h => h.status === 'applied');
+      return offerEntry && appliedEntry;
+    });
+    if (offerApps.length > 0) {
+      const totalTime = offerApps.reduce((sum, app) => {
+        const appliedEntry = app.status_history.find(h => h.status === 'applied')!;
+        const offerEntry = app.status_history.find(h => h.status === 'offer')!;
+        return sum + (offerEntry.timestamp - appliedEntry.timestamp);
+      }, 0);
+      stats.averageTimeToOffer = totalTime / offerApps.length / (1000 * 60 * 60 * 24); // Days
+    }
+
+    return stats;
   }
 
   // ==================== MODEL CONFIG OPERATIONS ====================

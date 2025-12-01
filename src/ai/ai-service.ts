@@ -30,7 +30,7 @@ class AIService {
         throw new Error('Anthropic provider not implemented yet');
       default:
         const _provider: never = config.provider;
-        throw new Error(`Unknown AI provider: ${config.provider}`);
+        throw new Error(`Unknown AI provider: ${_provider}`);
     }
 
     // Validate API key
