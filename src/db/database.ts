@@ -122,6 +122,26 @@ class DatabaseManager {
     return this.getAdapter().updateApplication(id, updates);
   }
 
+  async updateApplicationStatus(id: number, status: Parameters<StorageAdapter['updateApplicationStatus']>[1], note?: string) {
+    return this.getAdapter().updateApplicationStatus(id, status, note);
+  }
+
+  async addReminder(applicationId: number, reminder: Parameters<StorageAdapter['addReminder']>[1]) {
+    return this.getAdapter().addReminder(applicationId, reminder);
+  }
+
+  async completeReminder(applicationId: number, reminderId: string, completed: boolean = true) {
+    return this.getAdapter().completeReminder(applicationId, reminderId, completed);
+  }
+
+  async getApplicationsByStatus(status: Parameters<StorageAdapter['getApplicationsByStatus']>[0]) {
+    return this.getAdapter().getApplicationsByStatus(status);
+  }
+
+  async getApplicationStats() {
+    return this.getAdapter().getApplicationStats();
+  }
+
   // ==================== MODEL CONFIG OPERATIONS ====================
 
   async getDefaultModel() {

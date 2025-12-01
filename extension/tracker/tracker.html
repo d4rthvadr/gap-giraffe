@@ -153,6 +153,59 @@
     </main>
   </div>
 
+  <!-- Status Update Modal -->
+  <div id="status-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Update Application Status</h2>
+        <button class="modal-close" id="modal-close-btn">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-job-info">
+          <h3 id="modal-job-title"></h3>
+          <p id="modal-job-company"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="status-select">New Status</label>
+          <select id="status-select" class="modal-select">
+            <option value="saved">💾 Saved</option>
+            <option value="applied">📤 Applied</option>
+            <option value="screening">👀 Screening</option>
+            <option value="interview_scheduled">📅 Interview Scheduled</option>
+            <option value="interview_completed">✅ Interview Completed</option>
+            <option value="offer">🎉 Offer Received</option>
+            <option value="accepted">✓ Accepted</option>
+            <option value="rejected">✗ Rejected</option>
+            <option value="withdrawn">⏸️ Withdrawn</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status-note">Note (Optional)</label>
+          <textarea 
+            id="status-note" 
+            class="modal-textarea" 
+            placeholder="Add a note about this status change..."
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="status-history" id="status-history">
+          <h4>Status History</h4>
+          <div id="history-list" class="history-list"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="secondary-btn" id="modal-cancel-btn">Cancel</button>
+        <button class="primary-btn" id="modal-save-btn">Update Status</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../dist/tracker/tracker.js"></script>
 </body>
 </html>

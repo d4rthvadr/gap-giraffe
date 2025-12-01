@@ -36,6 +36,18 @@ export abstract class StorageAdapter {
   abstract getApplicationsForJob(jobId: number): Promise<Application[]>;
   abstract getAllApplications(): Promise<Application[]>;
   abstract updateApplication(id: number, updates: Partial<Application>): Promise<void>;
+  abstract updateApplicationStatus(id: number, status: Application['status'], note?: string): Promise<void>;
+  abstract addReminder(applicationId: number, reminder: Omit<import('./types').Reminder, 'id' | 'created_at'>): Promise<void>;
+  abstract completeReminder(applicationId: number, reminderId: string, completed?: boolean): Promise<void>;
+  abstract getApplicationsByStatus(status: Application['status']): Promise<Application[]>;
+  abstract getApplicationStats(): Promise<{
+    total: number;
+    byStatus: Record<Application['status'], number>;
+    averageTimeToInterview: number | null;
+    averageTimeToOffer: number | null;
+    successRate: number;
+  }>;
+
 
   // Model config operations
   abstract getDefaultModel(): Promise<ModelConfig | null>;

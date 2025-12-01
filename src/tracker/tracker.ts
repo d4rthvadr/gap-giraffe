@@ -366,12 +366,173 @@ function viewJobDetails(jobId: number): void {
 }
 
 /**
- * Edit application (placeholder for status update)
+ * Edit application (open status update modal)
  */
 function editApplication(appId: number): void {
-  // TODO: Implement in Sub-task 5.4
-  console.log('Edit application:', appId);
-  alert('Status update coming in next phase!');
+  const app = applications.find(a => a.id === appId);
+  if (!app) return;
+
+  const job = jobs.get(app.job_id);
+  if (!job) return;
+
+  openStatusModal(app, job);
+}
+
+/**
+ * Open status update modal
+ */
+function openStatusModal(app: Application, job: Job): void {
+  const modal = document.getElementById('status-modal')!;
+  const modalJobTitle = document.getElementById('modal-job-title')!;
+  const modalJobCompany = document.getElementById('modal-job-company')!;
+  const statusSelect = document.getElementById('status-select') as HTMLSelectElement;
+  const statusNote = document.getElementById('status-note') as HTMLTextAreaElement;
+  const historyList = document.getElementById('history-list')!;
+
+  // Set job info
+  modalJobTitle.textContent = job.title;
+  modalJobCompany.textContent = job.company || 'Company not specified';
+
+  // Set current status
+  statusSelect.value = app.status;
+  statusNote.value = '';
+
+  // Render status history
+  renderStatusHistory(app, historyList);
+
+  // Show modal
+  modal.classList.remove('hidden');
+
+  // Setup modal event listeners
+  setupModalListeners(app);
+}
+
+/**
+ * Render status history
+ */
+function renderStatusHistory(app: Application, container: HTMLElement): void {
+  container.innerHTML = '';
+
+  // Sort history by timestamp (newest first)
+  const history = [...app.status_history].sort((a, b) => b.timestamp - a.timestamp);
+
+  history.forEach(entry => {
+    const date = new Date(entry.timestamp).toLocaleString();
+    const statusText = entry.status.replace('_', ' ');
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <div class="history-icon">📌</div>
+      <div class="history-content">
+        <div class="history-status">${escapeHtml(statusText)}</div>
+        <div class="history-date">${date}</div>
+        ${entry.note ? `<div class="history-note">"${escapeHtml(entry.note)}"</div>` : ''}
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+/**
+ * Setup modal event listeners
+ */
+function setupModalListeners(app: Application): void {
+  const modal = document.getElementById('status-modal')!;
+  const closeBtn = document.getElementById('modal-close-btn')!;
+  const cancelBtn = document.getElementById('modal-cancel-btn')!;
+  const saveBtn = document.getElementById('modal-save-btn')!;
+  const overlay = modal.querySelector('.modal-overlay')!;
+
+  // Close handlers
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    cleanup();
+  };
+
+  const cleanup = () => {
+    closeBtn.removeEventListener('click', closeModal);
+    cancelBtn.removeEventListener('click', closeModal);
+    overlay.removeEventListener('click', closeModal);
+    saveBtn.removeEventListener('click', saveHandler);
+  };
+
+  const saveHandler = async () => {
+    await updateApplicationStatus(app);
+    closeModal();
+  };
+
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
+  saveBtn.addEventListener('click', saveHandler);
+}
+
+/**
+ * Update application status
+ */
+async function updateApplicationStatus(app: Application): Promise<void> {
+  const statusSelect = document.getElementById('status-select') as HTMLSelectElement;
+  const statusNote = document.getElementById('status-note') as HTMLTextAreaElement;
+
+  const newStatus = statusSelect.value as Application['status'];
+  const note = statusNote.value.trim() || undefined;
+
+  if (newStatus === app.status) {
+    return; // No change
+  }
+
+  try {
+    // Update in database
+    await db.updateApplicationStatus(app.id!, newStatus, note);
+
+    // Update local state
+    const appIndex = applications.findIndex(a => a.id === app.id);
+    if (appIndex >= 0) {
+      const updated = await db.getApplication(app.id!);
+      if (updated) {
+        applications[appIndex] = updated;
+      }
+    }
+
+    // Re-render
+    renderApplications();
+
+    // Show success feedback
+    showSuccessToast(`Status updated to ${newStatus.replace('_', ' ')}`);
+
+  } catch (error) {
+    console.error('Failed to update status:', error);
+    alert('Failed to update status. Please try again.');
+  }
+}
+
+/**
+ * Show success toast notification
+ */
+function showSuccessToast(message: string): void {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    z-index: 2000;
+    animation: slideIn 0.3s ease-out;
+    font-weight: 600;
+  `;
+  toast.textContent = `✓ ${message}`;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
 
 /**
