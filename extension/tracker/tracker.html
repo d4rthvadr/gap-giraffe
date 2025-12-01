@@ -93,27 +93,39 @@
             <h3>Application Funnel</h3>
             <div class="funnel-chart">
               <div class="funnel-stage">
-                <div class="funnel-bar" data-stage="total">
+                <div class="funnel-header">
                   <span class="funnel-label">Total Saved</span>
                   <span class="funnel-value" id="funnel-total">0</span>
                 </div>
+                <div class="funnel-track">
+                  <div class="funnel-bar" data-stage="total"></div>
+                </div>
               </div>
               <div class="funnel-stage">
-                <div class="funnel-bar" data-stage="applied">
+                <div class="funnel-header">
                   <span class="funnel-label">Applied</span>
                   <span class="funnel-value" id="funnel-applied">0</span>
                 </div>
-              </div>
-              <div class="funnel-stage">
-                <div class="funnel-bar" data-stage="interview">
-                  <span class="funnel-label">Interviews</span>
-                  <span class="funnel-value" id="funnel-interview">0</span>
+                <div class="funnel-track">
+                  <div class="funnel-bar" data-stage="applied"></div>
                 </div>
               </div>
               <div class="funnel-stage">
-                <div class="funnel-bar" data-stage="offer">
+                <div class="funnel-header">
+                  <span class="funnel-label">Interviews</span>
+                  <span class="funnel-value" id="funnel-interview">0</span>
+                </div>
+                <div class="funnel-track">
+                  <div class="funnel-bar" data-stage="interview"></div>
+                </div>
+              </div>
+              <div class="funnel-stage">
+                <div class="funnel-header">
                   <span class="funnel-label">Offers</span>
                   <span class="funnel-value" id="funnel-offer">0</span>
+                </div>
+                <div class="funnel-track">
+                  <div class="funnel-bar" data-stage="offer"></div>
                 </div>
               </div>
             </div>

@@ -153,9 +153,13 @@ function updateFunnelBar(stage: string, value: number, total: number): void {
   
   if (valueEl) valueEl.textContent = value.toString();
   
-  if (bar && total > 0) {
-    const percentage = Math.max((value / total) * 100, 5); // Min 5% width
-    bar.style.width = `${percentage}%`;
+  if (bar) {
+    if (total > 0) {
+      const percentage = (value / total) * 100;
+      bar.style.width = `${percentage}%`;
+    } else {
+      bar.style.width = '0%';
+    }
   }
 }
 
