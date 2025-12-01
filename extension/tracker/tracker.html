@@ -135,6 +135,116 @@
         </div>
       </div>
 
+
+      <!-- Analytics Section -->
+      <div class="analytics-section hidden" id="analytics-section">
+        <div class="analytics-header">
+          <h2>📊 Analytics Dashboard</h2>
+          <button class="secondary-btn" id="close-analytics-btn">Close</button>
+        </div>
+
+        <div class="analytics-grid">
+          <!-- Detailed Stats -->
+          <div class="analytics-card">
+            <h3>Application Funnel</h3>
+            <div class="funnel-chart">
+              <div class="funnel-stage">
+                <div class="funnel-bar" data-stage="total">
+                  <span class="funnel-label">Total Saved</span>
+                  <span class="funnel-value" id="funnel-total">0</span>
+                </div>
+              </div>
+              <div class="funnel-stage">
+                <div class="funnel-bar" data-stage="applied">
+                  <span class="funnel-label">Applied</span>
+                  <span class="funnel-value" id="funnel-applied">0</span>
+                </div>
+              </div>
+              <div class="funnel-stage">
+                <div class="funnel-bar" data-stage="interview">
+                  <span class="funnel-label">Interviews</span>
+                  <span class="funnel-value" id="funnel-interview">0</span>
+                </div>
+              </div>
+              <div class="funnel-stage">
+                <div class="funnel-bar" data-stage="offer">
+                  <span class="funnel-label">Offers</span>
+                  <span class="funnel-value" id="funnel-offer">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Time Metrics -->
+          <div class="analytics-card">
+            <h3>⏱️ Time Metrics</h3>
+            <div class="metrics-list">
+              <div class="metric-item">
+                <span class="metric-label">Avg. Time to Interview</span>
+                <span class="metric-value" id="metric-time-interview">--</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Avg. Time to Offer</span>
+                <span class="metric-value" id="metric-time-offer">--</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Response Rate</span>
+                <span class="metric-value" id="metric-response-rate">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Breakdown -->
+          <div class="analytics-card">
+            <h3>📈 Status Breakdown</h3>
+            <div class="status-breakdown">
+              <div class="breakdown-item">
+                <span class="breakdown-label">Saved</span>
+                <div class="breakdown-bar">
+                  <div class="breakdown-fill" id="breakdown-saved"></div>
+                </div>
+                <span class="breakdown-count" id="count-breakdown-saved">0</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Applied</span>
+                <div class="breakdown-bar">
+                  <div class="breakdown-fill" id="breakdown-applied"></div>
+                </div>
+                <span class="breakdown-count" id="count-breakdown-applied">0</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Screening</span>
+                <div class="breakdown-bar">
+                  <div class="breakdown-fill" id="breakdown-screening"></div>
+                </div>
+                <span class="breakdown-count" id="count-breakdown-screening">0</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Interview</span>
+                <div class="breakdown-bar">
+                  <div class="breakdown-fill" id="breakdown-interview"></div>
+                </div>
+                <span class="breakdown-count" id="count-breakdown-interview">0</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Offer</span>
+                <div class="breakdown-bar">
+                  <div class="breakdown-fill" id="breakdown-offer"></div>
+                </div>
+                <span class="breakdown-count" id="count-breakdown-offer">0</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Closed</span>
+                <div class="breakdown-bar">
+                  <div class="breakdown-fill" id="breakdown-closed"></div>
+                </div>
+                <span class="breakdown-count" id="count-breakdown-closed">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Stats Summary -->
       <div class="stats-summary" id="stats-summary">
         <div class="stat-card">
@@ -148,6 +258,11 @@
         <div class="stat-card">
           <span class="stat-label">Success Rate</span>
           <span class="stat-value" id="stat-success">0%</span>
+        </div>
+        <div class="stat-card stat-card-action">
+          <button class="analytics-toggle-btn" id="show-analytics-btn">
+            <span>📊 View Analytics</span>
+          </button>
         </div>
       </div>
     </main>

@@ -95,6 +95,95 @@ function setupEventListeners(): void {
   analyzeBtn?.addEventListener('click', () => {
     window.close();
   });
+
+  // Analytics toggle
+  const showAnalyticsBtn = document.getElementById('show-analytics-btn');
+  const closeAnalyticsBtn = document.getElementById('close-analytics-btn');
+  const analyticsSection = document.getElementById('analytics-section');
+
+  showAnalyticsBtn?.addEventListener('click', () => {
+    analyticsSection?.classList.remove('hidden');
+    updateAnalytics();
+    // Scroll to analytics
+    analyticsSection?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  closeAnalyticsBtn?.addEventListener('click', () => {
+    analyticsSection?.classList.add('hidden');
+  });
+}
+
+/**
+ * Update analytics dashboard
+ */
+async function updateAnalytics(): Promise<void> {
+  const stats = await db.getApplicationStats();
+  
+  // Update Funnel
+  const total = stats.total;
+  const applied = stats.byStatus.applied + stats.byStatus.screening + stats.byStatus.interview_scheduled + stats.byStatus.interview_completed + stats.byStatus.offer + stats.byStatus.accepted + stats.byStatus.rejected + stats.byStatus.withdrawn;
+  const interview = stats.byStatus.interview_scheduled + stats.byStatus.interview_completed + stats.byStatus.offer + stats.byStatus.accepted + stats.byStatus.rejected; // Approximation
+  const offer = stats.byStatus.offer + stats.byStatus.accepted;
+
+  updateFunnelBar('total', total, total);
+  updateFunnelBar('applied', applied, total);
+  updateFunnelBar('interview', interview, total);
+  updateFunnelBar('offer', offer, total);
+
+  // Update Time Metrics
+  const timeInterviewEl = document.getElementById('metric-time-interview');
+  const timeOfferEl = document.getElementById('metric-time-offer');
+  const responseRateEl = document.getElementById('metric-response-rate');
+
+  if (timeInterviewEl) timeInterviewEl.textContent = stats.averageTimeToInterview ? `${Math.round(stats.averageTimeToInterview)} days` : '--';
+  if (timeOfferEl) timeOfferEl.textContent = stats.averageTimeToOffer ? `${Math.round(stats.averageTimeToOffer)} days` : '--';
+  
+  // Calculate response rate (screening+ / applied)
+  const responses = applied - stats.byStatus.applied; // Anyone who moved past 'applied'
+  const responseRate = applied > 0 ? Math.round((responses / applied) * 100) : 0;
+  if (responseRateEl) responseRateEl.textContent = `${responseRate}%`;
+
+  // Update Status Breakdown
+  updateStatusBreakdown(stats.byStatus, total);
+}
+
+function updateFunnelBar(stage: string, value: number, total: number): void {
+  const bar = document.querySelector(`.funnel-bar[data-stage="${stage}"]`) as HTMLElement;
+  const valueEl = document.getElementById(`funnel-${stage}`);
+  
+  if (valueEl) valueEl.textContent = value.toString();
+  
+  if (bar && total > 0) {
+    const percentage = Math.max((value / total) * 100, 5); // Min 5% width
+    bar.style.width = `${percentage}%`;
+  }
+}
+
+function updateStatusBreakdown(byStatus: Record<string, number>, total: number): void {
+  Object.entries(byStatus).forEach(([status, count]) => {
+    // Map DB status to UI ID
+    let uiId = status;
+    if (status === 'interview_scheduled' || status === 'interview_completed') uiId = 'interview';
+    if (status === 'accepted' || status === 'rejected' || status === 'withdrawn') uiId = 'closed';
+
+    const bar = document.getElementById(`breakdown-${uiId}`);
+    const countEl = document.getElementById(`count-breakdown-${uiId}`);
+    
+    // Aggregate counts for grouped statuses
+    let displayCount = count;
+    if (uiId === 'interview') {
+      displayCount = byStatus.interview_scheduled + byStatus.interview_completed;
+    } else if (uiId === 'closed') {
+      displayCount = byStatus.accepted + byStatus.rejected + byStatus.withdrawn;
+    }
+
+    if (countEl) countEl.textContent = displayCount.toString();
+    
+    if (bar && total > 0) {
+      const percentage = (displayCount / total) * 100;
+      bar.style.width = `${percentage}%`;
+    }
+  });
 }
 
 /**
