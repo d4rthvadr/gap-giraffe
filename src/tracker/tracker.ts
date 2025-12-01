@@ -100,16 +100,25 @@ function setupEventListeners(): void {
   const showAnalyticsBtn = document.getElementById('show-analytics-btn');
   const closeAnalyticsBtn = document.getElementById('close-analytics-btn');
   const analyticsSection = document.getElementById('analytics-section');
+  const btnText = showAnalyticsBtn?.querySelector('span');
 
   showAnalyticsBtn?.addEventListener('click', () => {
-    analyticsSection?.classList.remove('hidden');
-    updateAnalytics();
-    // Scroll to analytics
-    analyticsSection?.scrollIntoView({ behavior: 'smooth' });
+    const isHidden = analyticsSection?.classList.contains('hidden');
+    
+    if (isHidden) {
+      analyticsSection?.classList.remove('hidden');
+      updateAnalytics();
+      analyticsSection?.scrollIntoView({ behavior: 'smooth' });
+      if (btnText) btnText.textContent = '📊 Hide Analytics';
+    } else {
+      analyticsSection?.classList.add('hidden');
+      if (btnText) btnText.textContent = '📊 View Analytics';
+    }
   });
 
   closeAnalyticsBtn?.addEventListener('click', () => {
     analyticsSection?.classList.add('hidden');
+    if (btnText) btnText.textContent = '📊 View Analytics';
   });
 }
 
