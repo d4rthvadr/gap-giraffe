@@ -113,9 +113,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.runtime.openOptionsPage();
   });
   
-  // Tracker button click handler (opens resumes page)
+  // Tracker button click handler
   trackerBtn.addEventListener('click', () => {
-    chrome.tabs.create({ url: chrome.runtime.getURL('resumes/resumes.html') });
+    chrome.tabs.create({ url: chrome.runtime.getURL('tracker/tracker.html') });
   });
   
 

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Tracker - Gap Giraffe</title>
+  <link rel="stylesheet" href="tracker.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-content">
+        <div class="title-section">
+          <h1>🦒 Application Tracker</h1>
+          <p class="subtitle">Track your job applications</p>
+        </div>
+        <div class="header-actions">
+          <button id="view-toggle-btn" class="secondary-btn">
+            <span id="view-icon">📋</span>
+            <span id="view-text">Board View</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Controls Bar -->
+      <div class="controls-bar">
+        <div class="search-box">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search applications..." 
+            class="search-input"
+          />
+        </div>
+        
+        <div class="filter-controls">
+          <select id="status-filter" class="filter-select">
+            <option value="all">All Statuses</option>
+            <option value="saved">Saved</option>
+            <option value="applied">Applied</option>
+            <option value="screening">Screening</option>
+            <option value="interview_scheduled">Interview Scheduled</option>
+            <option value="interview_completed">Interview Completed</option>
+            <option value="offer">Offer</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+            <option value="withdrawn">Withdrawn</option>
+          </select>
+
+          <select id="sort-by" class="filter-select">
+            <option value="recent">Most Recent</option>
+            <option value="oldest">Oldest First</option>
+            <option value="score">Match Score</option>
+            <option value="company">Company A-Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- List View -->
+      <div id="list-view" class="list-view">
+        <div id="applications-list" class="applications-list">
+          <!-- Loading state -->
+          <div class="loading" id="loading-state">
+            <div class="spinner"></div>
+            <p>Loading applications...</p>
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state hidden" id="empty-state">
+            <div class="empty-icon">📭</div>
+            <h2>No Applications Yet</h2>
+            <p>Start by analyzing a job and saving it to applications</p>
+            <button class="primary-btn" id="analyze-job-btn">
+              🔍 Analyze a Job
+            </button>
+          </div>
+
+          <!-- Applications will be inserted here -->
+        </div>
+      </div>
+
+      <!-- Board View (Kanban) -->
+      <div id="board-view" class="board-view hidden">
+        <div class="board-columns">
+          <div class="board-column" data-status="saved">
+            <div class="column-header">
+              <h3>💾 Saved</h3>
+              <span class="count" id="count-saved">0</span>
+            </div>
+            <div class="column-content" id="column-saved"></div>
+          </div>
+
+          <div class="board-column" data-status="applied">
+            <div class="column-header">
+              <h3>📤 Applied</h3>
+              <span class="count" id="count-applied">0</span>
+            </div>
+            <div class="column-content" id="column-applied"></div>
+          </div>
+
+          <div class="board-column" data-status="screening">
+            <div class="column-header">
+              <h3>👀 Screening</h3>
+              <span class="count" id="count-screening">0</span>
+            </div>
+            <div class="column-content" id="column-screening"></div>
+          </div>
+
+          <div class="board-column" data-status="interview_scheduled">
+            <div class="column-header">
+              <h3>📅 Interview</h3>
+              <span class="count" id="count-interview_scheduled">0</span>
+            </div>
+            <div class="column-content" id="column-interview_scheduled"></div>
+          </div>
+
+          <div class="board-column" data-status="offer">
+            <div class="column-header">
+              <h3>🎉 Offer</h3>
+              <span class="count" id="count-offer">0</span>
+            </div>
+            <div class="column-content" id="column-offer"></div>
+          </div>
+
+          <div class="board-column" data-status="closed">
+            <div class="column-header">
+              <h3>📁 Closed</h3>
+              <span class="count" id="count-closed">0</span>
+            </div>
+            <div class="column-content" id="column-closed"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Summary -->
+      <div class="stats-summary" id="stats-summary">
+        <div class="stat-card">
+          <span class="stat-label">Total Applications</span>
+          <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Active</span>
+          <span class="stat-value" id="stat-active">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Success Rate</span>
+          <span class="stat-value" id="stat-success">0%</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../dist/tracker/tracker.js"></script>
+</body>
+</html>

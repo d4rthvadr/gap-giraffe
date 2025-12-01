@@ -68,3 +68,11 @@ esbuild.build({
   outfile: 'extension/dist/results/results.js',
   platform: 'browser',
 }).then(() => console.log('✓ Results page built')).catch(() => process.exit(1));
+
+// Build tracker page
+esbuild.build({
+  ...buildConfig,
+  entryPoints: ['src/tracker/tracker.ts'],
+  outfile: 'extension/dist/tracker/tracker.js',
+  platform: 'browser',
+}).then(() => console.log('✓ Tracker page built')).catch(() => process.exit(1));
