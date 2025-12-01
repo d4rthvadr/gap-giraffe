@@ -4,6 +4,10 @@ import { db } from '../db/database';
 import type { Job } from '../db/types';
 import type { JobAnalysisResult } from '../ai/types';
 
+// Global state
+let currentJobId: number = 0;
+let applicationSaved: boolean = false;
+
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('Results page loaded');
 
@@ -24,6 +28,9 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 async function loadAndDisplayResults(jobId: number): Promise<void> {
   try {
+    // Store job ID globally for save button
+    currentJobId = jobId;
+
     // Initialize database
     await db.initialize();
 
@@ -218,6 +225,7 @@ function showError(message: string): void {
   `;
 }
 
+
 /**
  * Escape HTML to prevent XSS
  */
@@ -227,12 +235,112 @@ function escapeHtml(text: string): string {
   return div.innerHTML;
 }
 
+/**
+ * Show success message
+ */
+function showSuccess(message: string): void {
+  const main = document.querySelector('main') as HTMLElement;
+  
+  // Create toast notification
+  const toast = document.createElement('div');
+  toast.className = 'success-toast';
+  toast.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      z-index: 1000;
+      animation: slideIn 0.3s ease-out;
+    ">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 20px;">✓</span>
+        <span style="font-weight: 600;">${message}</span>
+      </div>
+    </div>
+  `;
+  
+  main.appendChild(toast);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
 // Action button handlers
-document.getElementById('save-application-btn')?.addEventListener('click', () => {
-  // TODO: Implement save to applications (Stage 5)
-  alert('Application tracking coming in Stage 5!');
+const saveBtn = document.getElementById('save-application-btn') as HTMLButtonElement;
+const analyzeAnotherBtn = document.getElementById('analyze-another-btn') as HTMLButtonElement;
+
+saveBtn?.addEventListener('click', async () => {
+  if (applicationSaved) {
+    showSuccess('Application already saved!');
+    return;
+  }
+
+  try {
+    // Disable button during save
+    saveBtn.disabled = true;
+    saveBtn.textContent = '💾 Saving...';
+
+    // Check if application already exists for this job
+    const existingApps = await db.getApplicationsForJob(currentJobId);
+    if (existingApps.length > 0) {
+      showSuccess('Application already exists for this job!');
+      applicationSaved = true;
+      saveBtn.textContent = '✓ Saved';
+      return;
+    }
+
+    // Create application record
+    const applicationId = await db.createApplication({
+      job_id: currentJobId,
+      resume_version_id: null,  // TODO: Link to resume if available
+      status: 'saved',
+      status_history: [{
+        status: 'saved',
+        timestamp: Date.now(),
+        note: 'Job saved from analysis results'
+      }],
+      applied_at: null,
+      interview_date: null,
+      interview_notes: null,
+      reminders: [],
+      notes: null,
+      updated_at: new Date().toISOString()
+    });
+
+    console.log('Application created with ID:', applicationId);
+    
+    applicationSaved = true;
+    saveBtn.textContent = '✓ Saved';
+    showSuccess('Application saved successfully!');
+
+    // Add "View in Tracker" button
+    const viewTrackerBtn = document.createElement('button');
+    viewTrackerBtn.className = 'secondary-btn';
+    viewTrackerBtn.textContent = '📊 View in Tracker';
+    viewTrackerBtn.style.marginLeft = '16px';
+    viewTrackerBtn.onclick = () => {
+      chrome.tabs.create({ url: chrome.runtime.getURL('tracker/tracker.html') });
+    };
+    
+    saveBtn.parentElement?.insertBefore(viewTrackerBtn, saveBtn.nextSibling);
+
+  } catch (error) {
+    console.error('Failed to save application:', error);
+    showError('Failed to save application. Please try again.');
+    saveBtn.disabled = false;
+    saveBtn.textContent = '💾 Save to Applications';
+  }
 });
 
-document.getElementById('analyze-another-btn')?.addEventListener('click', () => {
+analyzeAnotherBtn?.addEventListener('click', () => {
   window.close();
 });
