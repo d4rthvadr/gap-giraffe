@@ -348,8 +348,15 @@ main {
   display: flex;
   gap: 24px;
   padding: 24px 32px;
-  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
   background: #f9fafb;
+}
+
+/* Analytics Section */
+.analytics-section {
+  padding: 24px 32px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .stat-card {
@@ -727,12 +734,7 @@ main {
   border-top: 1px solid #e5e7eb;
 }
 
-/* Analytics Section */
-.analytics-section {
-  padding: 24px 32px;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
-}
+
 
 .analytics-header {
   display: flex;

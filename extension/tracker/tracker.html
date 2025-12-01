@@ -59,82 +59,26 @@
         </div>
       </div>
 
-      <!-- List View -->
-      <div id="list-view" class="list-view">
-        <div id="applications-list" class="applications-list">
-          <!-- Loading state -->
-          <div class="loading" id="loading-state">
-            <div class="spinner"></div>
-            <p>Loading applications...</p>
-          </div>
-
-          <!-- Empty state -->
-          <div class="empty-state hidden" id="empty-state">
-            <div class="empty-icon">📭</div>
-            <h2>No Applications Yet</h2>
-            <p>Start by analyzing a job and saving it to applications</p>
-            <button class="primary-btn" id="analyze-job-btn">
-              🔍 Analyze a Job
-            </button>
-          </div>
-
-          <!-- Applications will be inserted here -->
+      <!-- Stats Summary -->
+      <div class="stats-summary" id="stats-summary">
+        <div class="stat-card">
+          <span class="stat-label">Total Applications</span>
+          <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Active</span>
+          <span class="stat-value" id="stat-active">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Success Rate</span>
+          <span class="stat-value" id="stat-success">0%</span>
+        </div>
+        <div class="stat-card stat-card-action">
+          <button class="analytics-toggle-btn" id="show-analytics-btn">
+            <span>📊 View Analytics</span>
+          </button>
         </div>
       </div>
-
-      <!-- Board View (Kanban) -->
-      <div id="board-view" class="board-view hidden">
-        <div class="board-columns">
-          <div class="board-column" data-status="saved">
-            <div class="column-header">
-              <h3>💾 Saved</h3>
-              <span class="count" id="count-saved">0</span>
-            </div>
-            <div class="column-content" id="column-saved"></div>
-          </div>
-
-          <div class="board-column" data-status="applied">
-            <div class="column-header">
-              <h3>📤 Applied</h3>
-              <span class="count" id="count-applied">0</span>
-            </div>
-            <div class="column-content" id="column-applied"></div>
-          </div>
-
-          <div class="board-column" data-status="screening">
-            <div class="column-header">
-              <h3>👀 Screening</h3>
-              <span class="count" id="count-screening">0</span>
-            </div>
-            <div class="column-content" id="column-screening"></div>
-          </div>
-
-          <div class="board-column" data-status="interview_scheduled">
-            <div class="column-header">
-              <h3>📅 Interview</h3>
-              <span class="count" id="count-interview_scheduled">0</span>
-            </div>
-            <div class="column-content" id="column-interview_scheduled"></div>
-          </div>
-
-          <div class="board-column" data-status="offer">
-            <div class="column-header">
-              <h3>🎉 Offer</h3>
-              <span class="count" id="count-offer">0</span>
-            </div>
-            <div class="column-content" id="column-offer"></div>
-          </div>
-
-          <div class="board-column" data-status="closed">
-            <div class="column-header">
-              <h3>📁 Closed</h3>
-              <span class="count" id="count-closed">0</span>
-            </div>
-            <div class="column-content" id="column-closed"></div>
-          </div>
-        </div>
-      </div>
-
 
       <!-- Analytics Section -->
       <div class="analytics-section hidden" id="analytics-section">
@@ -245,26 +189,84 @@
         </div>
       </div>
 
-      <!-- Stats Summary -->
-      <div class="stats-summary" id="stats-summary">
-        <div class="stat-card">
-          <span class="stat-label">Total Applications</span>
-          <span class="stat-value" id="stat-total">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Active</span>
-          <span class="stat-value" id="stat-active">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Success Rate</span>
-          <span class="stat-value" id="stat-success">0%</span>
-        </div>
-        <div class="stat-card stat-card-action">
-          <button class="analytics-toggle-btn" id="show-analytics-btn">
-            <span>📊 View Analytics</span>
-          </button>
+      <!-- List View -->
+      <div id="list-view" class="list-view">
+        <div id="applications-list" class="applications-list">
+          <!-- Loading state -->
+          <div class="loading" id="loading-state">
+            <div class="spinner"></div>
+            <p>Loading applications...</p>
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state hidden" id="empty-state">
+            <div class="empty-icon">📭</div>
+            <h2>No Applications Yet</h2>
+            <p>Start by analyzing a job and saving it to applications</p>
+            <button class="primary-btn" id="analyze-job-btn">
+              🔍 Analyze a Job
+            </button>
+          </div>
+
+          <!-- Applications will be inserted here -->
         </div>
       </div>
+
+      <!-- Board View (Kanban) -->
+      <div id="board-view" class="board-view hidden">
+        <div class="board-columns">
+          <div class="board-column" data-status="saved">
+            <div class="column-header">
+              <h3>💾 Saved</h3>
+              <span class="count" id="count-saved">0</span>
+            </div>
+            <div class="column-content" id="column-saved"></div>
+          </div>
+
+          <div class="board-column" data-status="applied">
+            <div class="column-header">
+              <h3>📤 Applied</h3>
+              <span class="count" id="count-applied">0</span>
+            </div>
+            <div class="column-content" id="column-applied"></div>
+          </div>
+
+          <div class="board-column" data-status="screening">
+            <div class="column-header">
+              <h3>👀 Screening</h3>
+              <span class="count" id="count-screening">0</span>
+            </div>
+            <div class="column-content" id="column-screening"></div>
+          </div>
+
+          <div class="board-column" data-status="interview_scheduled">
+            <div class="column-header">
+              <h3>📅 Interview</h3>
+              <span class="count" id="count-interview_scheduled">0</span>
+            </div>
+            <div class="column-content" id="column-interview_scheduled"></div>
+          </div>
+
+          <div class="board-column" data-status="offer">
+            <div class="column-header">
+              <h3>🎉 Offer</h3>
+              <span class="count" id="count-offer">0</span>
+            </div>
+            <div class="column-content" id="column-offer"></div>
+          </div>
+
+          <div class="board-column" data-status="closed">
+            <div class="column-header">
+              <h3>📁 Closed</h3>
+              <span class="count" id="count-closed">0</span>
+            </div>
+            <div class="column-content" id="column-closed"></div>
+          </div>
+        </div>
+      </div>
+
+
+
     </main>
   </div>
 
