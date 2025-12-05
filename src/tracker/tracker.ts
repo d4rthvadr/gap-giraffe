@@ -120,6 +120,12 @@ function setupEventListeners(): void {
     analyticsSection?.classList.add('hidden');
     if (btnText) btnText.textContent = '📊 View Analytics';
   });
+
+  // Export button
+  const exportBtn = document.getElementById('export-btn');
+  exportBtn?.addEventListener('click', () => {
+    exportToExcel();
+  });
 }
 
 /**
@@ -662,4 +668,90 @@ function escapeHtml(text: string): string {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+/**
+ * Export applications to Excel (CSV format)
+ */
+async function exportToExcel(): Promise<void> {
+  try {
+    // Get all applications
+    const applications = await db.getAllApplications();
+    
+    if (applications.length === 0) {
+      showSuccessToast('No applications to export');
+      return;
+    }
+
+    // Get all jobs for the applications
+    const jobPromises = applications.map(app => db.getJob(app.job_id));
+    const jobs = await Promise.all(jobPromises);
+
+    // Create CSV content
+    const headers = [
+      'Company',
+      'Job Title',
+      'Status',
+      'Match Score',
+      'Applied Date',
+      'Interview Date',
+      'Notes',
+      'Job URL',
+      'Created At',
+      'Updated At'
+    ];
+
+    const rows = applications.map((app, index) => {
+      const job = jobs[index];
+      const appliedDate = app.applied_at ? new Date(app.applied_at).toLocaleDateString() : '';
+      const interviewDate = app.interview_date ? new Date(app.interview_date).toLocaleDateString() : '';
+      const createdAt = app.status_history.length > 0 
+        ? new Date(app.status_history[0].timestamp).toLocaleDateString() 
+        : '';
+      const updatedAt = new Date(app.updated_at).toLocaleDateString();
+      
+      return [
+        job?.company || 'N/A',
+        job?.title || 'N/A',
+        formatStatus(app.status),
+        job?.match_score || 'N/A',
+        appliedDate,
+        interviewDate,
+        app.notes || '',
+        job?.url || '',
+        createdAt,
+        updatedAt
+      ];
+    });
+
+    // Convert to CSV
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `job-applications-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    showSuccessToast(`Exported ${applications.length} applications`);
+  } catch (error) {
+    console.error('Export error:', error);
+    showSuccessToast('Failed to export applications');
+  }
+}
+
+/**
+ * Format status for display
+ */
+function formatStatus(status: string): string {
+  return status
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }

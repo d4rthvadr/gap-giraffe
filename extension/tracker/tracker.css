@@ -110,6 +110,15 @@ main {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+#export-btn {
+  white-space: nowrap;
+}
+
+#export-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
 /* List View */
 .list-view {
   padding: 32px;
