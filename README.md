@@ -1,227 +1,205 @@
 # Gap Giraffe 🦒
 
-A Chrome browser extension that helps job seekers optimize their resumes using AI-powered analysis.
+**Your AI-powered job application assistant**
 
-## 🎯 Goal
+Gap Giraffe helps you land more interviews by analyzing job postings, matching them with your resume, and tracking your applications—all in one place.
 
-Automatically analyze job descriptions and help applicants tailor their resumes for better matches by:
-- Extracting job requirements from any posting
-- Comparing requirements with your resume
-- Generating AI-powered optimization suggestions
-- Tracking resume versions for different jobs
-- Managing application status over time
+---
 
-## 🚀 Quick Start
+## What Does It Do?
 
-### Prerequisites
-- Node.js (v16 or higher)
-- Google Chrome browser
-- npm or yarn
+Gap Giraffe is a Chrome extension that:
 
-### Installation
+1. **Analyzes Job Postings** - Automatically extracts requirements from any job listing
+2. **Matches Your Resume** - Compares the job with your resume and gives you a match score
+3. **Provides Suggestions** - Shows you exactly what to add or emphasize in your resume
+4. **Tracks Applications** - Manages all your job applications in one dashboard
+5. **Exports Data** - Download your applications as a spreadsheet
 
-1. **Clone the repository**
-   ```bash
-   git clone git@github.com:d4rthvadr/gap-giraffe.git
-   cd gap-giraffe
-   ```
+---
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+## How to Install
 
-3. **Build the extension**
-   ```bash
-   npm run build
-   ```
+### Step 1: Get the Code
+```bash
+git clone git@github.com:d4rthvadr/gap-giraffe.git
+cd gap-giraffe
+```
 
-4. **Load in Chrome**
-   - Open `chrome://extensions/`
-   - Enable "Developer mode" (top-right toggle)
-   - Click "Load unpacked"
-   - Select the `extension` folder
+### Step 2: Install & Build
+```bash
+npm install
+npm run build
+```
 
-### Usage
+### Step 3: Add to Chrome
+1. Open Chrome and go to `chrome://extensions/`
+2. Turn on **Developer mode** (toggle in top-right)
+3. Click **Load unpacked**
+4. Select the `extension` folder from this project
 
-1. Navigate to any job posting (LinkedIn, Indeed, etc.)
-2. Click the Gap Giraffe extension icon
-3. Click "Analyze This Job" button
-4. View job analysis and match score
+### Step 4: Set Up Your API Key
+1. Get a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Click the Gap Giraffe icon in Chrome
+3. Go to **Settings**
+4. Paste your API key and click **Save**
 
-## 📁 Project Structure
+---
+
+## How to Use
+
+### Analyzing a Job
+1. Open any job posting (LinkedIn, Indeed, company website, etc.)
+2. Click the **Gap Giraffe** extension icon
+3. Click **Analyze This Job**
+4. View your match score and suggestions
+
+### Tracking Applications
+1. After analyzing a job, click **Save to Applications**
+2. Click **Job Tracker** to see all your applications
+3. Update status as you progress (Applied → Interview → Offer)
+4. Use filters and search to find specific applications
+
+### Viewing Analytics
+1. Open the **Job Tracker**
+2. Click **View Analytics**
+3. See your application funnel, success rate, and time metrics
+
+### Exporting Data
+1. In the **Job Tracker**, click **Export**
+2. Your applications download as a CSV file
+3. Open in Excel, Google Sheets, or any spreadsheet app
+
+---
+
+## Features
+
+### 📊 Smart Job Analysis
+- Extracts job requirements automatically
+- Identifies key skills and experience needed
+- Calculates match score (0-100%)
+- Shows what you're missing vs. what you have
+
+### 📝 Resume Matching
+- Upload your resume (PDF, TXT, or DOCX)
+- Compares your skills with job requirements
+- Highlights gaps and strengths
+- Provides actionable suggestions
+
+### 📋 Application Tracking
+- Save interesting jobs with one click
+- Track status: Saved, Applied, Interview, Offer, etc.
+- Add notes and dates
+- View in List or Board (Kanban) layout
+- Search and filter by company, status, or date
+
+### 📈 Analytics Dashboard
+- Application funnel (how many move to each stage)
+- Average time to interview and offer
+- Success rate tracking
+- Status breakdown charts
+
+### 💾 Data Export
+- Export all applications to CSV
+- Includes job title, company, status, dates, notes
+- Works with Excel and Google Sheets
+
+### 🔒 Privacy First
+- All data stored locally in your browser
+- No data sent to external servers (except AI analysis)
+- You control your API key
+- Delete data anytime
+
+---
+
+## Technology Stack
+
+### What We Use
+- **TypeScript** - For type-safe code
+- **Chrome Extension API** - To integrate with your browser
+- **IndexedDB** - Local database in your browser
+- **Google Gemini AI** - For intelligent job analysis
+- **esbuild** - Fast build tool
+
+### Why These Choices?
+- **No frameworks** - Keeps the extension fast and lightweight
+- **Local storage** - Your data stays private
+- **Modern CSS** - Clean, professional design
+- **Minimal dependencies** - Quick to install and run
+
+---
+
+## Project Structure
 
 ```
 gap-giraffe/
-├── src/                      # TypeScript source files
-│   ├── background.ts        # Service worker (orchestration)
-│   ├── popup/              # Extension popup UI
-│   │   └── popup.ts
-│   ├── content/            # Job scraping scripts
-│   │   └── content.ts
-│   ├── ai/                 # AI integration layer
-│   │   ├── types.ts
-│   │   ├── ai-provider.ts
-│   │   ├── gemini-provider.ts
-│   │   └── ai-service.ts
-│   ├── db/                 # Database layer
-│   │   ├── storage-adapter.ts
-│   │   ├── indexeddb-adapter.ts
-│   │   ├── database.ts
-│   │   └── types.ts
-│   ├── options/            # Settings page
-│   │   └── options.ts
-│   └── types/              # Shared TypeScript types
-│       └── index.ts
-├── extension/              # Extension files (load in Chrome)
-│   ├── manifest.json      # Extension configuration
-│   ├── dist/             # Compiled JavaScript (auto-generated)
-│   ├── popup/
-│   │   ├── popup.html
-│   │   └── popup.css
-│   ├── options/          # Settings page UI
-│   │   ├── options.html
-│   │   └── options.css
-│   └── icons/
-├── docs/                  # Documentation
-│   └── roadmap.md        # Development roadmap
-├── build.js              # esbuild bundler configuration
-├── tsconfig.json         # TypeScript configuration
-└── package.json          # Dependencies and scripts
+├── extension/          # The Chrome extension
+│   ├── popup/         # Main popup window
+│   ├── tracker/       # Application tracker page
+│   ├── results/       # Analysis results page
+│   ├── options/       # Settings page
+│   └── styles/        # Shared design system
+├── src/               # Source code (TypeScript)
+│   ├── ai/           # AI integration
+│   ├── db/           # Database layer
+│   ├── resume/       # Resume parsing
+│   └── tracker/      # Application tracking
+└── docs/             # Documentation
 ```
 
-## 🛠️ Development Commands
+---
 
+## Development
+
+### Build Commands
 ```bash
 # Build once
 npm run build
 
-# Watch mode (auto-rebuild on changes)
+# Auto-rebuild on changes
 npm run watch
 
-# Clean build artifacts
+# Clean build files
 npm run clean
 ```
 
-## ✨ Features
-
-### Current (Stage 5 Complete)
-
-✅ **Job Analysis**
-- Intelligent job scraping from any website
-- Extracts title, company, and description
-- Confidence scoring for extraction quality
-- Visual feedback on job pages
-
-✅ **AI Integration**
-- Google Gemini 2.5 Flash integration
-- Automatic job requirement extraction
-- Key skills identification
-- Match scoring (0-100)
-- Resume vs job comparison
-- Cost: ~$0.0002 per analysis (nearly free!)
-
-✅ **Data Management**
-- IndexedDB storage (native browser)
-- Job history tracking
-- Duplicate detection
-- AI analysis results stored
-- Storage adapter pattern (easy to switch backends)
-
-✅ **Configuration**
-- Options page for API key setup
-- Model selection
-- Temperature control
-- API connection testing
-- Privacy-focused (all data local)
-
-✅ **Resume Management**
-- Upload and parse resumes (PDF, TXT, DOCX)
-- Master resume storage
-- Resume content extraction
-- Version tracking
-
-✅ **Application Tracking**
-- Save jobs to applications
-- Status management (Saved, Applied, Interview, Offer, etc.)
-- Status history with timestamps and notes
-- List and Board (Kanban) views
-- Search and filter applications
-- Sort by date, score, or company
-
-✅ **Analytics Dashboard**
-- Application funnel visualization
-- Time metrics (avg time to interview/offer)
-- Status breakdown charts
-- Response rate tracking
-- Toggle analytics view
-
-✅ **Export Functionality**
-- Export applications to CSV/Excel
-- Includes all application data
-- Date-stamped filenames
-- One-click download
-
-✅ **User Interface**
-- Modern design with gradient theme
-- Results page with match scores
-- Tracker dashboard
-- Loading states and error handling
-- Responsive layout
-- Toast notifications
-
-### Coming Soon
-
-⏳ **Reminders & Notifications**
-- Follow-up reminders
-- Chrome notifications
-- Reminder management
-
-See [docs/task.md](docs/task.md) for detailed development plan.
-
-## 🔧 Technologies
-
-**Frontend**
-- TypeScript (strict mode with full type safety)
-- Chrome Extension API (Manifest V3)
-- Vanilla JavaScript (no framework overhead)
-- Modern CSS (gradients, animations)
-
-**Build Tools**
-- esbuild (fast JavaScript bundler)
-- npm scripts for automation
-
-**Storage**
-- IndexedDB (native browser database)
-- Storage adapter pattern (future: SQLite, Cloud sync)
-
-**AI**
-- Google Gemini 2.5 Flash (default)
-- Configurable API integration
-- Structured output parsing
-
-## 📊 Database Schema
-
-**Current Tables:**
-- `resumes` - Master resume storage
-- `resume_versions` - Job-specific optimized versions  
-- `jobs` - Extracted job postings with analysis
-- `applications` - Application tracking with status history
-- `model_configs` - AI model settings
-
-See [src/db/indexeddb-adapter.ts](src/db/indexeddb-adapter.ts) for schema details.
-
-## 🤝 Contributing
-
-This is currently a personal project in active development. Issues and suggestions are welcome!
-
-## 📝 License
-
-MIT
+### Making Changes
+1. Edit files in `src/` or `extension/`
+2. Run `npm run build`
+3. Reload the extension in Chrome
 
 ---
 
-**Version:** 1.0.0 (Stage 5 Complete)  
-**Status:** Active Development  
-**Last Updated:** December 5, 2025
+## FAQ
 
+**Q: Is it free?**  
+A: Yes! You just need a free Google AI API key. Each analysis costs ~$0.0002 (fractions of a penny).
+
+**Q: Where is my data stored?**  
+A: Everything is stored locally in your browser using IndexedDB. Nothing is sent to external servers except the job description to Google AI for analysis.
+
+**Q: Can I use it offline?**  
+A: You can view your saved applications offline, but analyzing new jobs requires an internet connection for the AI.
+
+**Q: What job sites does it work with?**  
+A: Any website! It works on LinkedIn, Indeed, company career pages, and more.
+
+**Q: Can I delete my data?**  
+A: Yes, you can clear all data from Chrome's extension settings.
+
+---
+
+## Support
+
+Found a bug or have a suggestion? [Open an issue](https://github.com/d4rthvadr/gap-giraffe/issues)
+
+---
+
+## License
+
+MIT License - feel free to use and modify!
+
+---
+
+**Version:** 1.0.0  
+**Last Updated:** December 5, 2025
