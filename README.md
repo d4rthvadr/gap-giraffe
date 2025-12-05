@@ -105,7 +105,7 @@ npm run clean
 
 ## ✨ Features
 
-### Current (Stage 3 Complete)
+### Current (Stage 5 Complete)
 
 ✅ **Job Analysis**
 - Intelligent job scraping from any website
@@ -114,10 +114,11 @@ npm run clean
 - Visual feedback on job pages
 
 ✅ **AI Integration**
-- Google Gemini 1.5 Flash integration
+- Google Gemini 2.5 Flash integration
 - Automatic job requirement extraction
 - Key skills identification
-- Experience level analysis
+- Match scoring (0-100)
+- Resume vs job comparison
 - Cost: ~$0.0002 per analysis (nearly free!)
 
 ✅ **Data Management**
@@ -129,38 +130,54 @@ npm run clean
 
 ✅ **Configuration**
 - Options page for API key setup
-- Model selection (Flash vs Pro)
+- Model selection
 - Temperature control
 - API connection testing
 - Privacy-focused (all data local)
 
+✅ **Resume Management**
+- Upload and parse resumes (PDF, TXT, DOCX)
+- Master resume storage
+- Resume content extraction
+- Version tracking
+
+✅ **Application Tracking**
+- Save jobs to applications
+- Status management (Saved, Applied, Interview, Offer, etc.)
+- Status history with timestamps and notes
+- List and Board (Kanban) views
+- Search and filter applications
+- Sort by date, score, or company
+
+✅ **Analytics Dashboard**
+- Application funnel visualization
+- Time metrics (avg time to interview/offer)
+- Status breakdown charts
+- Response rate tracking
+- Toggle analytics view
+
+✅ **Export Functionality**
+- Export applications to CSV/Excel
+- Includes all application data
+- Date-stamped filenames
+- One-click download
+
 ✅ **User Interface**
-- Modern popup with gradient design
+- Modern design with gradient theme
+- Results page with match scores
+- Tracker dashboard
 - Loading states and error handling
 - Responsive layout
-- Settings access from popup
+- Toast notifications
 
-### Coming Soon (Stage 4+)
+### Coming Soon
 
-⏳ **Resume Management**
-- Upload and parse resumes (PDF, TXT, DOCX)
-- Create job-specific versions
-- Version comparison
-- Download optimized resumes
+⏳ **Reminders & Notifications**
+- Follow-up reminders
+- Chrome notifications
+- Reminder management
 
-⏳ **Advanced AI Analysis**
-- Resume vs job matching
-- Match scoring (0-100)
-- Specific optimization suggestions
-- Section-by-section improvements
-
-⏳ **Application Tracking**
-- Status tracking (Applied, Interview, Offer, etc.)
-- Timeline view
-- Notes and reminders
-- Analytics dashboard
-
-See [docs/roadmap.md](docs/roadmap.md) for detailed development plan.
+See [docs/task.md](docs/task.md) for detailed development plan.
 
 ## 🔧 Technologies
 
@@ -178,18 +195,18 @@ See [docs/roadmap.md](docs/roadmap.md) for detailed development plan.
 - IndexedDB (native browser database)
 - Storage adapter pattern (future: SQLite, Cloud sync)
 
-**AI (Coming Soon)**
-- Google Gemini 1.5 Flash (default)
-- OpenAI GPT-4 (optional)
-- Anthropic Claude (optional)
+**AI**
+- Google Gemini 2.5 Flash (default)
+- Configurable API integration
+- Structured output parsing
 
 ## 📊 Database Schema
 
 **Current Tables:**
 - `resumes` - Master resume storage
 - `resume_versions` - Job-specific optimized versions  
-- `jobs` - Extracted job postings
-- `applications` - Application tracking
+- `jobs` - Extracted job postings with analysis
+- `applications` - Application tracking with status history
 - `model_configs` - AI model settings
 
 See [src/db/indexeddb-adapter.ts](src/db/indexeddb-adapter.ts) for schema details.
@@ -204,6 +221,7 @@ MIT
 
 ---
 
-**Version:** 1.0.0 (Stage 3 Complete)  
+**Version:** 1.0.0 (Stage 5 Complete)  
 **Status:** Active Development  
-**Last Updated:** November 19, 2025
+**Last Updated:** December 5, 2025
+
