@@ -133,54 +133,76 @@ async function handleJobExtracted(
     
     // Check if job already exists
     const existingJob = await db.getJobByUrl(job.url);
+    let jobId: number;
     
     if (existingJob) {
       console.log('Job already exists in database:', existingJob.id, 'analyzed:', existingJob.analyzed);
       
-      // Broadcast to popup (so it doesn't timeout)
-      chrome.runtime.sendMessage({
-        type: 'JOB_EXTRACTED',
-        data: {
-          jobId: existingJob.id,
-          analyzed: existingJob.analyzed,
-          cached: true
+      // If already analyzed, return cached results
+      if (existingJob.analyzed) {
+        // Parse analysis if available
+        let analysis = null;
+        if (existingJob.analysis_result) {
+          try {
+            analysis = JSON.parse(existingJob.analysis_result);
+          } catch (e) {
+            console.error('Failed to parse cached analysis:', e);
+          }
         }
-      }).catch(() => console.log('Popup closed'));
+        
+        // Broadcast to popup
+        chrome.runtime.sendMessage({
+          type: 'JOB_EXTRACTED',
+          data: {
+            jobId: existingJob.id,
+            analyzed: true,
+            analysis: analysis,
+            cached: true
+          }
+        }).catch(() => console.log('Popup closed'));
+        
+        sendResponse({ 
+          success: true, 
+          message: 'Job already analyzed (cached)',
+          data: { jobId: existingJob.id, analyzed: true, analysis }
+        });
+        return;
+      }
       
-      sendResponse({ 
-        success: true, 
-        message: existingJob.analyzed ? 'Job already analyzed (cached)' : 'Job already saved',
-        data: { jobId: existingJob.id, analyzed: existingJob.analyzed }
+      // Job exists but not analyzed - use existing ID and continue to analysis
+      console.log('Job exists but not analyzed, proceeding to analysis...');
+      jobId = existingJob.id!;
+      
+    } else {
+      // Create new job record
+      jobId = await db.createJob({
+        url: job.url,
+        title: job.title.value,
+        title_confidence: job.title.confidence,
+        company: job.company.value || null,
+        company_confidence: job.company.confidence || null,
+        description: job.description.value,
+        description_confidence: job.description.confidence,
+        requirements: null,
+        scraped_at: job.extractedAt,
+        analyzed: false
       });
-      return;
+      
+      console.log('Job saved to database with ID:', jobId);
     }
-    
-    // Create new job record
-    const jobId = await db.createJob({
-      url: job.url,
-      title: job.title.value,
-      title_confidence: job.title.confidence,
-      company: job.company.value || null,
-      company_confidence: job.company.confidence || null,
-      description: job.description.value,
-      description_confidence: job.description.confidence,
-      requirements: null,
-      scraped_at: job.extractedAt,
-      analyzed: false
-    });
-    
-    console.log('Job saved to database with ID:', jobId);
     
     // Try to analyze with AI if configured
     try {
       const aiConfig = await chrome.storage.local.get(['aiConfig']);
+      const aiConfigObject = aiConfig.aiConfig as AIModelConfig;
       
-      if (aiConfig.aiConfig) {
+      if (aiConfigObject) {
         console.log('AI configured, starting analysis...');
         
         // Initialize AI service if not already done
         if (!aiService.isReady()) {
-          await aiService.initialize(aiConfig.aiConfig as AIModelConfig);
+          // await aiService.initialize(aiConfig.aiConfig as AIModelConfig);
+          await aiService.initialize(aiConfigObject);
         }
         
         // Try to get master resume for full analysis
@@ -200,7 +222,9 @@ async function handleJobExtracted(
           // Update job with analysis results
           await db.updateJob(jobId, {
             analyzed: true,
-            requirements: analysisResult.data.keyRequirements.join('\n')
+            requirements: analysisResult.data.keyRequirements.join('\n'),
+            analysis_result: JSON.stringify(analysisResult.data),
+            match_score: analysisResult.data.matchScore
           });
           
     // Broadcast results to popup
@@ -235,9 +259,13 @@ async function handleJobExtracted(
         } else {
           console.warn('AI analysis failed:', analysisResult.error);
         }
+      } else {
+        console.log('AI not configured, skipping analysis');
       }
-    } catch (aiError) {
+    } catch (aiError: any) {
       console.error('AI analysis error (non-fatal):', aiError);
+      if (aiError.name) console.error('Error Name:', aiError.name);
+      if (aiError.message) console.error('Error Message:', aiError.message);
     }
     
     // Fallback: Job saved but not analyzed
