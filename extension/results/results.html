@@ -4,16 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analysis Results - Gap Giraffe</title>
+  <link rel="stylesheet" href="../styles/variables.css">
   <link rel="stylesheet" href="results.css">
 </head>
 <body>
   <div class="container">
     <header>
       <div class="header-content">
-        <h1 id="job-title">Loading...</h1>
-        <p id="job-company" class="company"></p>
+        <div>
+          <h1 id="job-title">Loading...</h1>
+          <p id="job-company" class="company"></p>
+        </div>
       </div>
-      <a href="#" id="view-job-btn" class="secondary-btn" target="_blank">View Job Posting →</a>
+      <a href="#" id="view-job-btn" class="secondary-btn" target="_blank">View Job Posting</a>
     </header>
 
     <main>
@@ -61,7 +64,7 @@
       <div class="results-grid">
         <!-- Missing Skills -->
         <section class="result-column">
-          <h3>⚠️ Missing Skills</h3>
+          <h3>Missing Skills</h3>
           <p class="column-description">Skills you should add to your resume</p>
           <div id="missing-skills" class="skill-tags">
             <div class="loading">Analyzing...</div>
@@ -70,7 +73,7 @@
 
         <!-- Strengths -->
         <section class="result-column">
-          <h3>✅ Your Strengths</h3>
+          <h3>Your Strengths</h3>
           <p class="column-description">What you have that matches this role</p>
           <div id="strengths" class="skill-tags">
             <div class="loading">Analyzing...</div>
@@ -79,7 +82,7 @@
 
         <!-- Key Requirements -->
         <section class="result-column">
-          <h3>📋 Key Requirements</h3>
+          <h3>Key Requirements</h3>
           <p class="column-description">What this job is looking for</p>
           <div id="requirements" class="skill-tags">
             <div class="loading">Analyzing...</div>
@@ -89,7 +92,7 @@
 
       <!-- Suggestions Section -->
       <section class="suggestions-section">
-        <h2>💡 Optimization Suggestions</h2>
+        <h2>Optimization Suggestions</h2>
         <p class="section-description">Actionable improvements to boost your match score</p>
         <div id="suggestions-list" class="suggestions-grid">
           <div class="loading">Loading suggestions...</div>
@@ -99,10 +102,10 @@
       <!-- Actions -->
       <section class="actions-section">
         <button class="primary-btn" id="save-application-btn">
-          💾 Save to Applications
+          Save to Applications
         </button>
         <button class="secondary-btn" id="analyze-another-btn">
-          🔍 Analyze Another Job
+          Analyze Another Job
         </button>
       </section>
     </main>

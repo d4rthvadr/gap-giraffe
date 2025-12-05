@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Giraffe head -->
+  <ellipse cx="12" cy="8" rx="4" ry="5"/>
+  <!-- Ears -->
+  <path d="M9 6 L8 4"/>
+  <path d="M15 6 L16 4"/>
+  <!-- Neck -->
+  <path d="M10 12 L10 20"/>
+  <path d="M14 12 L14 20"/>
+  <!-- Spots -->
+  <circle cx="11" cy="7" r="0.5" fill="currentColor"/>
+  <circle cx="13" cy="9" r="0.5" fill="currentColor"/>
+  <circle cx="10" cy="15" r="0.5" fill="currentColor"/>
+  <circle cx="14" cy="17" r="0.5" fill="currentColor"/>
+</svg>

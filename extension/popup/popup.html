@@ -3,13 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Resume Optimizer</title>
+  <title>Gap Giraffe</title>
+  <link rel="stylesheet" href="../styles/variables.css">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>🎯 Job Resume Optimizer</h1>
+      <div class="logo">
+        <svg class="logo-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <ellipse cx="12" cy="8" rx="4" ry="5"/>
+          <path d="M9 6 L8 4"/>
+          <path d="M15 6 L16 4"/>
+          <path d="M10 12 L10 20"/>
+          <path d="M14 12 L14 20"/>
+          <circle cx="11" cy="7" r="0.5" fill="currentColor"/>
+          <circle cx="13" cy="9" r="0.5" fill="currentColor"/>
+        </svg>
+        <h1>Gap Giraffe</h1>
+      </div>
     </header>
     
     <main>
@@ -22,7 +34,10 @@
       
       <div class="section">
         <button id="analyze-btn" class="primary-btn">
-          <span class="btn-icon">🔍</span>
+          <svg class="icon icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
           Analyze This Job
         </button>
       </div>
@@ -34,7 +49,12 @@
       
       <div id="result-section" class="section hidden">
         <div class="result-card">
-          <h3>Analysis Complete ✓</h3>
+          <div class="result-header">
+            <svg class="icon icon-md" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <h3>Analysis Complete</h3>
+          </div>
           <div class="result-stats">
             <div class="stat">
               <span class="stat-label">Match Score:</span>
@@ -51,15 +71,34 @@
       
       <div id="error-section" class="section hidden">
         <div class="error-card">
-          <span class="error-icon">⚠️</span>
+          <svg class="icon icon-md" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
           <p id="error-message" class="error-text"></p>
         </div>
       </div>
     </main>
     
     <footer>
-      <button id="options-btn" class="link-btn">⚙️ Settings</button>
-      <button id="tracker-btn" class="link-btn">📊 Job Tracker</button>
+      <button id="options-btn" class="link-btn">
+        <svg class="icon icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6"/>
+          <path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24"/>
+          <path d="M1 12h6m6 0h6"/>
+          <path d="m4.93 19.07 4.24-4.24m5.66-5.66 4.24-4.24"/>
+        </svg>
+        Settings
+      </button>
+      <button id="tracker-btn" class="link-btn">
+        <svg class="icon icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v18h18"/>
+          <path d="m19 9-5 5-4-4-3 3"/>
+        </svg>
+        Job Tracker
+      </button>
     </footer>
   </div>
   
