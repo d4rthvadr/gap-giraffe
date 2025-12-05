@@ -1,6 +1,8 @@
 // Popup JavaScript for Job Resume Optimizer
 
-import type { Message, MessageResponse, AnalysisResult } from '../types';
+import type { Message, MessageResponse } from '../types';
+
+const ANALYSIS_TIMEOUT = 60 * 1000; // 60 seconds
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('Popup loaded');
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Content script injected, waiting for analysis...');
         
         // Wait for analysis to complete (with timeout)
-        const analysisComplete = await waitForAnalysis(30000); // 30 second timeout
+        const analysisComplete = await waitForAnalysis(ANALYSIS_TIMEOUT); // 30 second timeout
         
         if (analysisComplete) {
           console.log('Analysis complete:', analysisComplete);
