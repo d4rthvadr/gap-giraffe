@@ -13,24 +13,24 @@ Gap Giraffe helps you land more interviews by analyzing job postings, matching t
 *See your match score and get actionable suggestions to improve your resume*
 
 ### Application Tracker - List View
-![Application Tracker - List View](docs/screenshots/001-sc.png)
+![Application Tracker - List View](docs/screenshots/003-sc.png)
 *Track all your applications in one place with clean list view*
 
 ### Application Tracker - Board View
-![Application Tracker - Board View](docs/screenshots/001a-sc.png)
+![Application Tracker - Board View](docs/screenshots/004-sc.png)
 *Organize applications in Kanban-style board view*
 
-### Analytics Dashboard
-![Analytics Dashboard](docs/screenshots/002a-sc.png)
-*Visualize your job search progress with funnel charts and metrics*
-
 ### Settings Page
-![Settings Page](docs/screenshots/003-sc.png)
+![Settings Page](docs/screenshots/001-sc.png)
 *Configure your AI model and API keys*
 
 ### Resume Manager
-![Resume Manager](docs/screenshots/004-sc.png)
+![Resume Manager](docs/screenshots/000-sc.png)
 *Upload and manage multiple resume versions*
+
+### Live example view
+![Live example view](docs/screenshots/001a-sc.png)
+*See how Gap Giraffe works in real-time*
 
 ---
 
