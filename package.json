@@ -6,6 +6,7 @@
     "build": "node build.js",
     "watch": "node build.js --watch",
     "clean": "rm -rf extension/dist",
+    "zip": "zip -r extension.zip extension",
     "prebuild": "npm run clean"
   },
   "devDependencies": {
