@@ -21,58 +21,57 @@ const buildConfig = {
   external: ['sql.js'], // Don't bundle sql.js, load it externally
 };
 
-// Build background script
-esbuild.build({
-  ...buildConfig,
-  entryPoints: ['src/background.ts'],
-  outfile: 'extension/dist/background.js',
-  platform: 'browser',
-}).then(() => console.log('✓ Background script built')).catch(() => process.exit(1));
 
-// Build popup script
-esbuild.build({
-  ...buildConfig,
-  entryPoints: ['src/popup/popup.ts'],
-  outfile: 'extension/dist/popup/popup.js',
-  platform: 'browser',
-}).then(() => console.log('✓ Popup script built')).catch(() => process.exit(1));
+const buildPaths = [
+  {
+    name: 'background',
+    entryPoints: ['src/background.ts'],
+    outfile: 'extension/dist/background.js',
+    platform: 'browser',
+  },
+  {
+    name: 'popup',
+    entryPoints: ['src/popup/popup.ts'],
+    outfile: 'extension/dist/popup/popup.js',
+    platform: 'browser',
+  },
+  {
+    name: 'content',
+    entryPoints: ['src/content/content.ts'],
+    outfile: 'extension/dist/content/content.js',
+    platform: 'browser',
+  },
+  {
+    name: 'options',
+    entryPoints: ['src/options/options.ts'],
+    outfile: 'extension/dist/options/options.js',
+    platform: 'browser',
+  },
+  {
+    name: 'resumes',
+    entryPoints: ['src/resumes/resumes.ts'],
+    outfile: 'extension/dist/resumes/resumes.js',
+    platform: 'browser',
+  },
+  {
+    name: 'results',
+    entryPoints: ['src/results/results.ts'],
+    outfile: 'extension/dist/results/results.js',
+    platform: 'browser',
+  },
+  {
+    name: 'tracker',
+    entryPoints: ['src/tracker/tracker.ts'],
+    outfile: 'extension/dist/tracker/tracker.js',
+    platform: 'browser',
+  },
+];
 
-// Build content script
-esbuild.build({
-  ...buildConfig,
-  entryPoints: ['src/content/content.ts'],
-  outfile: 'extension/dist/content/content.js',
-  platform: 'browser',
-}).then(() => console.log('✓ Content script built')).catch(() => process.exit(1));
-
-// Build options page
-esbuild.build({
-  ...buildConfig,
-  entryPoints: ['src/options/options.ts'],
-  outfile: 'extension/dist/options/options.js',
-  platform: 'browser',
-}).then(() => console.log('✓ Options page built')).catch(() => process.exit(1));
-
-// Build resumes page
-esbuild.build({
-  ...buildConfig,
-  entryPoints: ['src/resumes/resumes.ts'],
-  outfile: 'extension/dist/resumes/resumes.js',
-  platform: 'browser',
-}).then(() => console.log('✓ Resumes page built')).catch(() => process.exit(1));
-
-// Build results page
-esbuild.build({
-  ...buildConfig,
-  entryPoints: ['src/results/results.ts'],
-  outfile: 'extension/dist/results/results.js',
-  platform: 'browser',
-}).then(() => console.log('✓ Results page built')).catch(() => process.exit(1));
-
-// Build tracker page
-esbuild.build({
-  ...buildConfig,
-  entryPoints: ['src/tracker/tracker.ts'],
-  outfile: 'extension/dist/tracker/tracker.js',
-  platform: 'browser',
-}).then(() => console.log('✓ Tracker page built')).catch(() => process.exit(1));
+buildPaths.forEach((path) => {
+  esbuild.build({
+    ...buildConfig,
+    entryPoints: path.entryPoints,
+    outfile: path.outfile,
+    platform: path.platform,
+  }).then(() => console.log(`✓ ${path.name} built`)).catch(() => process.exit(1));
+});
