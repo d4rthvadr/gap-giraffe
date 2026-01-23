@@ -16,6 +16,12 @@ jobs:
               with:
                   fetch-depth: 0
 
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+                  cache: "npm"
+
             - name: Get package version
               id: package-version
               run: |
@@ -33,6 +39,21 @@ jobs:
                     echo "exists=false" >> $GITHUB_OUTPUT
                     echo "Tag ${{ steps.package-version.outputs.version }} does not exist"
                   fi
+
+            - name: Generate CHANGELOG
+              if: steps.check-tag.outputs.exists == 'false'
+              run: |
+                  npm install --no-save conventional-changelog-cli
+                  npx conventional-changelog -p angular -i CHANGELOG.md -s
+
+            - name: Commit CHANGELOG
+              if: steps.check-tag.outputs.exists == 'false'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add CHANGELOG.md
+                  git diff --staged --quiet || git commit -m "chore: update CHANGELOG for ${{ steps.package-version.outputs.version }}"
+                  git push origin main
 
             - name: Create and push tag
               if: steps.check-tag.outputs.exists == 'false'
