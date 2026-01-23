@@ -131,16 +131,16 @@ function setupEventListeners(): void {
       analyticsSection?.classList.remove("hidden");
       updateAnalytics();
       analyticsSection?.scrollIntoView({ behavior: "smooth" });
-      if (btnText) btnText.textContent = "📊 Hide Analytics";
+      if (btnText) btnText.textContent = "Hide Analytics";
     } else {
       analyticsSection?.classList.add("hidden");
-      if (btnText) btnText.textContent = "📊 View Analytics";
+      if (btnText) btnText.textContent = "View Analytics";
     }
   });
 
   closeAnalyticsBtn?.addEventListener("click", () => {
     analyticsSection?.classList.add("hidden");
-    if (btnText) btnText.textContent = "📊 View Analytics";
+    if (btnText) btnText.textContent = "View Analytics";
   });
 
   // Export button
@@ -273,12 +273,10 @@ function toggleView(): void {
   if (currentView === "board") {
     listView?.classList.add("hidden");
     boardView?.classList.remove("hidden");
-    if (viewIcon) viewIcon.textContent = "📋";
     if (viewText) viewText.textContent = "List View";
   } else {
     listView?.classList.remove("hidden");
     boardView?.classList.add("hidden");
-    if (viewIcon) viewIcon.textContent = "📊";
     if (viewText) viewText.textContent = "Board View";
   }
 
@@ -445,8 +443,18 @@ function createApplicationCard(app: Application, job: Job): HTMLElement {
     <div class="card-footer">
       <span class="card-date">Updated ${updatedDate}</span>
       <div class="card-actions">
-        <button class="icon-btn" data-action="view" title="View Details">👁️</button>
-        <button class="icon-btn" data-action="edit" title="Update Status">✏️</button>
+        <button class="icon-btn" data-action="view" title="View Details">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+        <button class="icon-btn" data-action="edit" title="Update Status">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
       </div>
     </div>
   `;
@@ -493,8 +501,18 @@ function createBoardCard(app: Application, job: Job): HTMLElement {
         ${matchScore > 0 ? `<span>${matchScore}%</span>` : ""}
       </div>
       <div class="board-card-actions">
-        <button class="icon-btn" data-action="view" title="View Details">👁️</button>
-        <button class="icon-btn" data-action="edit" title="Update Status">✏️</button>
+        <button class="icon-btn" data-action="view" title="View Details">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+        <button class="icon-btn" data-action="edit" title="Update Status">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
       </div>
     </div>
   `;
@@ -705,7 +723,7 @@ function renderStatusHistory(app: Application, container: HTMLElement): void {
     const item = document.createElement("div");
     item.className = "history-item";
     item.innerHTML = `
-      <div class="history-icon">📌</div>
+      <div class="history-icon"></div>
       <div class="history-content">
         <div class="history-status">${escapeHtml(statusText)}</div>
         <div class="history-date">${date}</div>
@@ -817,7 +835,7 @@ function showSuccessToast(message: string): void {
     animation: slideIn 0.3s ease-out;
     font-weight: 600;
   `;
-  toast.textContent = `✓ ${message}`;
+  toast.textContent = message;
   document.body.appendChild(toast);
 
   setTimeout(() => {
