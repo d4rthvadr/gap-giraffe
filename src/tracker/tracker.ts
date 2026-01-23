@@ -16,6 +16,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   await initialize();
 });
 
+// Handle browser back/forward buttons
+window.addEventListener('popstate', (event) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const jobId = urlParams.get('jobId');
+  
+  if (jobId) {
+    showJobDetailsModal(parseInt(jobId));
+  } else {
+    hideJobDetailsModal();
+  }
+});
+
 /**
  * Initialize tracker page
  */
@@ -32,6 +44,13 @@ async function initialize(): Promise<void> {
 
     // Render initial view
     renderApplications();
+    
+    // Check if URL has jobId parameter (direct link or refresh)
+    const urlParams = new URLSearchParams(window.location.search);
+    const jobId = urlParams.get('jobId');
+    if (jobId) {
+      showJobDetailsModal(parseInt(jobId));
+    }
   } catch (error) {
     console.error("Failed to initialize tracker:", error);
     showError("Failed to load applications");
@@ -556,9 +575,58 @@ function updateEmptyState(isEmpty: boolean): void {
  * View job details
  */
 function viewJobDetails(jobId: number): void {
-  chrome.tabs.create({
-    url: chrome.runtime.getURL(`results/results.html?jobId=${jobId}`),
-  });
+  // Use iframe to show job details without leaving the page
+  const currentUrl = new URL(window.location.href);
+  currentUrl.searchParams.set('jobId', jobId.toString());
+  history.pushState({ jobId }, '', currentUrl);
+  
+  // Load job details in iframe or modal
+  showJobDetailsModal(jobId);
+}
+
+/**
+ * Show job details in a modal/overlay
+ */
+function showJobDetailsModal(jobId: number): void {
+  // Create or show iframe with job details
+  let detailsContainer = document.getElementById('job-details-container');
+  
+  if (!detailsContainer) {
+    detailsContainer = document.createElement('div');
+    detailsContainer.id = 'job-details-container';
+    detailsContainer.className = 'job-details-overlay';
+    detailsContainer.innerHTML = `
+      <div class="job-details-header">
+        <button id="back-to-tracker" class="back-btn">← Back to Tracker</button>
+      </div>
+      <iframe id="job-details-frame" src=""></iframe>
+    `;
+    document.body.appendChild(detailsContainer);
+    
+    // Back button handler
+    document.getElementById('back-to-tracker')!.addEventListener('click', () => {
+      history.back();
+    });
+  }
+  
+  // Load job details
+  const iframe = document.getElementById('job-details-frame') as HTMLIFrameElement;
+  iframe.src = chrome.runtime.getURL(`results/results.html?jobId=${jobId}`);
+  detailsContainer.classList.add('visible');
+  
+  // Hide tracker content
+  document.querySelector('.container')!.classList.add('hidden');
+}
+
+/**
+ * Hide job details and show tracker
+ */
+function hideJobDetailsModal(): void {
+  const detailsContainer = document.getElementById('job-details-container');
+  if (detailsContainer) {
+    detailsContainer.classList.remove('visible');
+  }
+  document.querySelector('.container')!.classList.remove('hidden');
 }
 
 /**
