@@ -391,17 +391,23 @@ header h1 {
   padding: var(--space-6);
 }
 
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
 .application-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-6);
 }
 
 .application-card {
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  padding: var(--space-5);
   transition: all var(--transition-fast);
 }
 
