@@ -457,15 +457,33 @@ header h1 {
 }
 
 /* Status badge colors */
-.status-badge.saved { border-left-color: var(--text-tertiary); }
-.status-badge.applied { border-left-color: var(--primary); }
-.status-badge.screening { border-left-color: var(--info); }
-.status-badge.interview_scheduled { border-left-color: var(--warning); }
-.status-badge.interview_completed { border-left-color: var(--warning); }
-.status-badge.offer { border-left-color: var(--success); }
-.status-badge.accepted { border-left-color: var(--success); }
-.status-badge.rejected { border-left-color: var(--danger); }
-.status-badge.withdrawn { border-left-color: var(--text-disabled); }
+.status-badge.saved {
+  border-left-color: var(--text-tertiary);
+}
+.status-badge.applied {
+  border-left-color: var(--primary);
+}
+.status-badge.screening {
+  border-left-color: var(--info);
+}
+.status-badge.interview_scheduled {
+  border-left-color: var(--warning);
+}
+.status-badge.interview_completed {
+  border-left-color: var(--warning);
+}
+.status-badge.offer {
+  border-left-color: var(--success);
+}
+.status-badge.accepted {
+  border-left-color: var(--success);
+}
+.status-badge.rejected {
+  border-left-color: var(--danger);
+}
+.status-badge.withdrawn {
+  border-left-color: var(--text-disabled);
+}
 
 .match-score {
   font-size: var(--text-sm);
@@ -558,6 +576,40 @@ header h1 {
   margin: 0 0 var(--space-1) 0;
 }
 
+.board-card p {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.board-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-light);
+}
+
+.board-card-meta {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.board-card-actions {
+  display: flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.board-card:hover .board-card-actions {
+  opacity: 1;
+}
+
 .board-card .card-company {
   margin-bottom: var(--space-2);
 }
@@ -588,8 +640,21 @@ header h1 {
 }
 
 /* Modal */
-.modal-overlay {
+.modal {
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-modal);
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-overlay {
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -598,12 +663,7 @@ header h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-modal);
   backdrop-filter: blur(4px);
-}
-
-.modal-overlay.hidden {
-  display: none;
 }
 
 .modal-content {

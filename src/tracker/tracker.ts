@@ -1,18 +1,18 @@
 // Application Tracker Logic
 
-import { db } from '../db/database';
-import type { Application, Job } from '../db/types';
+import { db } from "../db/database";
+import type { Application, Job } from "../db/types";
 
 // State
 let applications: Application[] = [];
 let jobs: Map<number, Job> = new Map();
-let currentView: 'list' | 'board' = 'list';
-let searchQuery: string = '';
-let statusFilter: string = 'all';
-let sortBy: string = 'recent';
+let currentView: "list" | "board" = "list";
+let searchQuery: string = "";
+let statusFilter: string = "all";
+let sortBy: string = "recent";
 
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('Tracker page loaded');
+document.addEventListener("DOMContentLoaded", async () => {
+  console.log("Tracker page loaded");
   await initialize();
 });
 
@@ -32,10 +32,9 @@ async function initialize(): Promise<void> {
 
     // Render initial view
     renderApplications();
-
   } catch (error) {
-    console.error('Failed to initialize tracker:', error);
-    showError('Failed to load applications');
+    console.error("Failed to initialize tracker:", error);
+    showError("Failed to load applications");
   }
 }
 
@@ -48,7 +47,7 @@ async function loadData(): Promise<void> {
   console.log(`Loaded ${applications.length} applications`);
 
   // Load related jobs
-  const jobIds = [...new Set(applications.map(app => app.job_id))];
+  const jobIds = [...new Set(applications.map((app) => app.job_id))];
   for (const jobId of jobIds) {
     const job = await db.getJob(jobId);
     if (job) {
@@ -57,8 +56,8 @@ async function loadData(): Promise<void> {
   }
 
   // Hide loading, show content
-  const loadingEl = document.getElementById('loading-state');
-  if (loadingEl) loadingEl.classList.add('hidden');
+  const loadingEl = document.getElementById("loading-state");
+  if (loadingEl) loadingEl.classList.add("hidden");
 }
 
 /**
@@ -66,64 +65,68 @@ async function loadData(): Promise<void> {
  */
 function setupEventListeners(): void {
   // View toggle
-  const viewToggleBtn = document.getElementById('view-toggle-btn');
-  viewToggleBtn?.addEventListener('click', toggleView);
+  const viewToggleBtn = document.getElementById("view-toggle-btn");
+  viewToggleBtn?.addEventListener("click", toggleView);
 
   // Search
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  searchInput?.addEventListener('input', (e) => {
+  const searchInput = document.getElementById(
+    "search-input",
+  ) as HTMLInputElement;
+  searchInput?.addEventListener("input", (e) => {
     searchQuery = (e.target as HTMLInputElement).value.toLowerCase();
     renderApplications();
   });
 
   // Status filter
-  const statusFilterEl = document.getElementById('status-filter') as HTMLSelectElement;
-  statusFilterEl?.addEventListener('change', (e) => {
+  const statusFilterEl = document.getElementById(
+    "status-filter",
+  ) as HTMLSelectElement;
+  statusFilterEl?.addEventListener("change", (e) => {
     statusFilter = (e.target as HTMLSelectElement).value;
     renderApplications();
   });
 
   // Sort
-  const sortByEl = document.getElementById('sort-by') as HTMLSelectElement;
-  sortByEl?.addEventListener('change', (e) => {
+  const sortByEl = document.getElementById("sort-by") as HTMLSelectElement;
+  sortByEl?.addEventListener("change", (e) => {
     sortBy = (e.target as HTMLSelectElement).value;
     renderApplications();
   });
 
   // Analyze job button
-  const analyzeBtn = document.getElementById('analyze-job-btn');
-  analyzeBtn?.addEventListener('click', () => {
+  const analyzeBtn = document.getElementById("analyze-job-btn");
+  analyzeBtn?.addEventListener("click", () => {
     window.close();
   });
 
   // Analytics toggle
-  const showAnalyticsBtn = document.getElementById('show-analytics-btn');
-  const closeAnalyticsBtn = document.getElementById('close-analytics-btn');
-  const analyticsSection = document.getElementById('analytics-section');
-  const btnText = showAnalyticsBtn?.querySelector('span');
+  const showAnalyticsBtn = document.getElementById("show-analytics-btn");
+  const closeAnalyticsBtn = document.getElementById("close-analytics-btn");
+  const analyticsSection = document.getElementById("analytics-section");
+  const btnText = showAnalyticsBtn?.querySelector("span");
 
-  showAnalyticsBtn?.addEventListener('click', () => {
-    const isHidden = analyticsSection?.classList.contains('hidden');
-    
+  showAnalyticsBtn?.addEventListener("click", () => {
+    const isHidden = analyticsSection?.classList.contains("hidden");
+
     if (isHidden) {
-      analyticsSection?.classList.remove('hidden');
+      analyticsSection?.classList.remove("hidden");
       updateAnalytics();
-      analyticsSection?.scrollIntoView({ behavior: 'smooth' });
-      if (btnText) btnText.textContent = '📊 Hide Analytics';
+      analyticsSection?.scrollIntoView({ behavior: "smooth" });
+      if (btnText) btnText.textContent = "📊 Hide Analytics";
     } else {
-      analyticsSection?.classList.add('hidden');
-      if (btnText) btnText.textContent = '📊 View Analytics';
+      analyticsSection?.classList.add("hidden");
+      if (btnText) btnText.textContent = "📊 View Analytics";
     }
   });
 
-  closeAnalyticsBtn?.addEventListener('click', () => {
-    analyticsSection?.classList.add('hidden');
-    if (btnText) btnText.textContent = '📊 View Analytics';
+  closeAnalyticsBtn?.addEventListener("click", () => {
+    analyticsSection?.classList.add("hidden");
+    if (btnText) btnText.textContent = "📊 View Analytics";
   });
 
   // Export button
-  const exportBtn = document.getElementById('export-btn');
-  exportBtn?.addEventListener('click', () => {
+  const exportBtn = document.getElementById("export-btn");
+  exportBtn?.addEventListener("click", () => {
     exportToExcel();
   });
 }
@@ -133,29 +136,49 @@ function setupEventListeners(): void {
  */
 async function updateAnalytics(): Promise<void> {
   const stats = await db.getApplicationStats();
-  
+
   // Update Funnel
   const total = stats.total;
-  const applied = stats.byStatus.applied + stats.byStatus.screening + stats.byStatus.interview_scheduled + stats.byStatus.interview_completed + stats.byStatus.offer + stats.byStatus.accepted + stats.byStatus.rejected + stats.byStatus.withdrawn;
-  const interview = stats.byStatus.interview_scheduled + stats.byStatus.interview_completed + stats.byStatus.offer + stats.byStatus.accepted + stats.byStatus.rejected; // Approximation
+  const applied =
+    stats.byStatus.applied +
+    stats.byStatus.screening +
+    stats.byStatus.interview_scheduled +
+    stats.byStatus.interview_completed +
+    stats.byStatus.offer +
+    stats.byStatus.accepted +
+    stats.byStatus.rejected +
+    stats.byStatus.withdrawn;
+  const interview =
+    stats.byStatus.interview_scheduled +
+    stats.byStatus.interview_completed +
+    stats.byStatus.offer +
+    stats.byStatus.accepted +
+    stats.byStatus.rejected; // Approximation
   const offer = stats.byStatus.offer + stats.byStatus.accepted;
 
-  updateFunnelBar('total', total, total);
-  updateFunnelBar('applied', applied, total);
-  updateFunnelBar('interview', interview, total);
-  updateFunnelBar('offer', offer, total);
+  updateFunnelBar("total", total, total);
+  updateFunnelBar("applied", applied, total);
+  updateFunnelBar("interview", interview, total);
+  updateFunnelBar("offer", offer, total);
 
   // Update Time Metrics
-  const timeInterviewEl = document.getElementById('metric-time-interview');
-  const timeOfferEl = document.getElementById('metric-time-offer');
-  const responseRateEl = document.getElementById('metric-response-rate');
+  const timeInterviewEl = document.getElementById("metric-time-interview");
+  const timeOfferEl = document.getElementById("metric-time-offer");
+  const responseRateEl = document.getElementById("metric-response-rate");
 
-  if (timeInterviewEl) timeInterviewEl.textContent = stats.averageTimeToInterview ? `${Math.round(stats.averageTimeToInterview)} days` : '--';
-  if (timeOfferEl) timeOfferEl.textContent = stats.averageTimeToOffer ? `${Math.round(stats.averageTimeToOffer)} days` : '--';
-  
+  if (timeInterviewEl)
+    timeInterviewEl.textContent = stats.averageTimeToInterview
+      ? `${Math.round(stats.averageTimeToInterview)} days`
+      : "--";
+  if (timeOfferEl)
+    timeOfferEl.textContent = stats.averageTimeToOffer
+      ? `${Math.round(stats.averageTimeToOffer)} days`
+      : "--";
+
   // Calculate response rate (screening+ / applied)
   const responses = applied - stats.byStatus.applied; // Anyone who moved past 'applied'
-  const responseRate = applied > 0 ? Math.round((responses / applied) * 100) : 0;
+  const responseRate =
+    applied > 0 ? Math.round((responses / applied) * 100) : 0;
   if (responseRateEl) responseRateEl.textContent = `${responseRate}%`;
 
   // Update Status Breakdown
@@ -163,41 +186,53 @@ async function updateAnalytics(): Promise<void> {
 }
 
 function updateFunnelBar(stage: string, value: number, total: number): void {
-  const bar = document.querySelector(`.funnel-bar[data-stage="${stage}"]`) as HTMLElement;
+  const bar = document.querySelector(
+    `.funnel-bar[data-stage="${stage}"]`,
+  ) as HTMLElement;
   const valueEl = document.getElementById(`funnel-${stage}`);
-  
+
   if (valueEl) valueEl.textContent = value.toString();
-  
+
   if (bar) {
     if (total > 0) {
       const percentage = (value / total) * 100;
       bar.style.width = `${percentage}%`;
     } else {
-      bar.style.width = '0%';
+      bar.style.width = "0%";
     }
   }
 }
 
-function updateStatusBreakdown(byStatus: Record<string, number>, total: number): void {
+function updateStatusBreakdown(
+  byStatus: Record<string, number>,
+  total: number,
+): void {
   Object.entries(byStatus).forEach(([status, count]) => {
     // Map DB status to UI ID
     let uiId = status;
-    if (status === 'interview_scheduled' || status === 'interview_completed') uiId = 'interview';
-    if (status === 'accepted' || status === 'rejected' || status === 'withdrawn') uiId = 'closed';
+    if (status === "interview_scheduled" || status === "interview_completed")
+      uiId = "interview";
+    if (
+      status === "accepted" ||
+      status === "rejected" ||
+      status === "withdrawn"
+    )
+      uiId = "closed";
 
     const bar = document.getElementById(`breakdown-${uiId}`);
     const countEl = document.getElementById(`count-breakdown-${uiId}`);
-    
+
     // Aggregate counts for grouped statuses
     let displayCount = count;
-    if (uiId === 'interview') {
-      displayCount = byStatus.interview_scheduled + byStatus.interview_completed;
-    } else if (uiId === 'closed') {
+    if (uiId === "interview") {
+      displayCount =
+        byStatus.interview_scheduled + byStatus.interview_completed;
+    } else if (uiId === "closed") {
       displayCount = byStatus.accepted + byStatus.rejected + byStatus.withdrawn;
     }
 
     if (countEl) countEl.textContent = displayCount.toString();
-    
+
     if (bar && total > 0) {
       const percentage = (displayCount / total) * 100;
       bar.style.width = `${percentage}%`;
@@ -209,23 +244,23 @@ function updateStatusBreakdown(byStatus: Record<string, number>, total: number):
  * Toggle between list and board view
  */
 function toggleView(): void {
-  currentView = currentView === 'list' ? 'board' : 'list';
-  
-  const listView = document.getElementById('list-view');
-  const boardView = document.getElementById('board-view');
-  const viewIcon = document.getElementById('view-icon');
-  const viewText = document.getElementById('view-text');
+  currentView = currentView === "list" ? "board" : "list";
 
-  if (currentView === 'board') {
-    listView?.classList.add('hidden');
-    boardView?.classList.remove('hidden');
-    if (viewIcon) viewIcon.textContent = '📋';
-    if (viewText) viewText.textContent = 'List View';
+  const listView = document.getElementById("list-view");
+  const boardView = document.getElementById("board-view");
+  const viewIcon = document.getElementById("view-icon");
+  const viewText = document.getElementById("view-text");
+
+  if (currentView === "board") {
+    listView?.classList.add("hidden");
+    boardView?.classList.remove("hidden");
+    if (viewIcon) viewIcon.textContent = "📋";
+    if (viewText) viewText.textContent = "List View";
   } else {
-    listView?.classList.remove('hidden');
-    boardView?.classList.add('hidden');
-    if (viewIcon) viewIcon.textContent = '📊';
-    if (viewText) viewText.textContent = 'Board View';
+    listView?.classList.remove("hidden");
+    boardView?.classList.add("hidden");
+    if (viewIcon) viewIcon.textContent = "📊";
+    if (viewText) viewText.textContent = "Board View";
   }
 
   renderApplications();
@@ -237,7 +272,7 @@ function toggleView(): void {
 function renderApplications(): void {
   const filtered = filterAndSortApplications();
 
-  if (currentView === 'list') {
+  if (currentView === "list") {
     renderListView(filtered);
   } else {
     renderBoardView(filtered);
@@ -254,17 +289,17 @@ function filterAndSortApplications(): Application[] {
   let filtered = [...applications];
 
   // Apply status filter
-  if (statusFilter !== 'all') {
-    filtered = filtered.filter(app => app.status === statusFilter);
+  if (statusFilter !== "all") {
+    filtered = filtered.filter((app) => app.status === statusFilter);
   }
 
   // Apply search filter
   if (searchQuery) {
-    filtered = filtered.filter(app => {
+    filtered = filtered.filter((app) => {
       const job = jobs.get(app.job_id);
       if (!job) return false;
 
-      const searchableText = `${job.title} ${job.company || ''}`.toLowerCase();
+      const searchableText = `${job.title} ${job.company || ""}`.toLowerCase();
       return searchableText.includes(searchQuery);
     });
   }
@@ -272,17 +307,21 @@ function filterAndSortApplications(): Application[] {
   // Apply sorting
   filtered.sort((a, b) => {
     switch (sortBy) {
-      case 'recent':
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-      case 'oldest':
-        return new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
-      case 'score':
+      case "recent":
+        return (
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+      case "oldest":
+        return (
+          new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+        );
+      case "score":
         const jobA = jobs.get(a.job_id);
         const jobB = jobs.get(b.job_id);
         return (jobB?.match_score || 0) - (jobA?.match_score || 0);
-      case 'company':
-        const companyA = jobs.get(a.job_id)?.company || '';
-        const companyB = jobs.get(b.job_id)?.company || '';
+      case "company":
+        const companyA = jobs.get(a.job_id)?.company || "";
+        const companyB = jobs.get(b.job_id)?.company || "";
         return companyA.localeCompare(companyB);
       default:
         return 0;
@@ -296,15 +335,15 @@ function filterAndSortApplications(): Application[] {
  * Render list view
  */
 function renderListView(apps: Application[]): void {
-  const container = document.getElementById('applications-list');
+  const container = document.getElementById("applications-list");
   if (!container) return;
 
   // Remove existing cards
-  const existingCards = container.querySelectorAll('.application-card');
-  existingCards.forEach(card => card.remove());
+  const existingCards = container.querySelectorAll(".application-card");
+  existingCards.forEach((card) => card.remove());
 
   // Add application cards
-  apps.forEach(app => {
+  apps.forEach((app) => {
     const job = jobs.get(app.job_id);
     if (!job) return;
 
@@ -319,12 +358,21 @@ function renderListView(apps: Application[]): void {
 function renderBoardView(apps: Application[]): void {
   // Group by status
   const grouped = {
-    saved: apps.filter(a => a.status === 'saved'),
-    applied: apps.filter(a => a.status === 'applied'),
-    screening: apps.filter(a => a.status === 'screening'),
-    interview_scheduled: apps.filter(a => a.status === 'interview_scheduled' || a.status === 'interview_completed'),
-    offer: apps.filter(a => a.status === 'offer'),
-    closed: apps.filter(a => a.status === 'accepted' || a.status === 'rejected' || a.status === 'withdrawn')
+    saved: apps.filter((a) => a.status === "saved"),
+    applied: apps.filter((a) => a.status === "applied"),
+    screening: apps.filter((a) => a.status === "screening"),
+    interview_scheduled: apps.filter(
+      (a) =>
+        a.status === "interview_scheduled" ||
+        a.status === "interview_completed",
+    ),
+    offer: apps.filter((a) => a.status === "offer"),
+    closed: apps.filter(
+      (a) =>
+        a.status === "accepted" ||
+        a.status === "rejected" ||
+        a.status === "withdrawn",
+    ),
   };
 
   // Render each column
@@ -333,8 +381,8 @@ function renderBoardView(apps: Application[]): void {
     const count = document.getElementById(`count-${status}`);
 
     if (column) {
-      column.innerHTML = '';
-      statusApps.forEach(app => {
+      column.innerHTML = "";
+      statusApps.forEach((app) => {
         const job = jobs.get(app.job_id);
         if (job) {
           const card = createBoardCard(app, job);
@@ -353,11 +401,11 @@ function renderBoardView(apps: Application[]): void {
  * Create application card for list view
  */
 function createApplicationCard(app: Application, job: Job): HTMLElement {
-  const card = document.createElement('div');
-  card.className = 'application-card';
+  const card = document.createElement("div");
+  card.className = "application-card";
   card.dataset.appId = app.id?.toString();
 
-  const statusText = app.status.replace('_', ' ');
+  const statusText = app.status.replace("_", " ");
   const updatedDate = new Date(app.updated_at).toLocaleDateString();
   const matchScore = job.match_score || 0;
 
@@ -365,10 +413,10 @@ function createApplicationCard(app: Application, job: Job): HTMLElement {
     <div class="card-header">
       <div class="card-title">
         <h3>${escapeHtml(job.title)}</h3>
-        <p>${escapeHtml(job.company || 'Company not specified')}</p>
+        <p>${escapeHtml(job.company || "Company not specified")}</p>
       </div>
       <div class="card-meta">
-        ${matchScore > 0 ? `<span class="match-score">${matchScore}% Match</span>` : ''}
+        ${matchScore > 0 ? `<span class="match-score">${matchScore}% Match</span>` : ""}
         <span class="status-badge ${app.status}">${statusText}</span>
       </div>
     </div>
@@ -382,17 +430,17 @@ function createApplicationCard(app: Application, job: Job): HTMLElement {
   `;
 
   // Event listeners
-  card.querySelector('[data-action="view"]')?.addEventListener('click', (e) => {
+  card.querySelector('[data-action="view"]')?.addEventListener("click", (e) => {
     e.stopPropagation();
     viewJobDetails(job.id!);
   });
 
-  card.querySelector('[data-action="edit"]')?.addEventListener('click', (e) => {
+  card.querySelector('[data-action="edit"]')?.addEventListener("click", (e) => {
     e.stopPropagation();
     editApplication(app.id!);
   });
 
-  card.addEventListener('click', () => {
+  card.addEventListener("click", () => {
     viewJobDetails(job.id!);
   });
 
@@ -403,23 +451,43 @@ function createApplicationCard(app: Application, job: Job): HTMLElement {
  * Create board card for kanban view
  */
 function createBoardCard(app: Application, job: Job): HTMLElement {
-  const card = document.createElement('div');
-  card.className = 'board-card';
+  const card = document.createElement("div");
+  card.className = "board-card";
   card.dataset.appId = app.id?.toString();
 
-  const updatedDate = new Date(app.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const updatedDate = new Date(app.updated_at).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
   const matchScore = job.match_score || 0;
 
   card.innerHTML = `
     <h4>${escapeHtml(job.title)}</h4>
-    <p>${escapeHtml(job.company || 'Company')}</p>
+    <p>${escapeHtml(job.company || "Company")}</p>
     <div class="board-card-footer">
-      <span>${updatedDate}</span>
-      ${matchScore > 0 ? `<span>${matchScore}%</span>` : ''}
+      <div class="board-card-meta">
+        <span>${updatedDate}</span>
+        ${matchScore > 0 ? `<span>${matchScore}%</span>` : ""}
+      </div>
+      <div class="board-card-actions">
+        <button class="icon-btn" data-action="view" title="View Details">👁️</button>
+        <button class="icon-btn" data-action="edit" title="Update Status">✏️</button>
+      </div>
     </div>
   `;
 
-  card.addEventListener('click', () => {
+  // Event listeners
+  card.querySelector('[data-action="view"]')?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    viewJobDetails(job.id!);
+  });
+
+  card.querySelector('[data-action="edit"]')?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    editApplication(app.id!);
+  });
+
+  card.addEventListener("click", () => {
     viewJobDetails(job.id!);
   });
 
@@ -431,18 +499,18 @@ function createBoardCard(app: Application, job: Job): HTMLElement {
  */
 function updateStats(): void {
   const total = applications.length;
-  const active = applications.filter(a => 
-    !['accepted', 'rejected', 'withdrawn'].includes(a.status)
+  const active = applications.filter(
+    (a) => !["accepted", "rejected", "withdrawn"].includes(a.status),
   ).length;
-  
-  const offers = applications.filter(a => 
-    a.status === 'offer' || a.status === 'accepted'
+
+  const offers = applications.filter(
+    (a) => a.status === "offer" || a.status === "accepted",
   ).length;
   const successRate = total > 0 ? Math.round((offers / total) * 100) : 0;
 
-  const statTotal = document.getElementById('stat-total');
-  const statActive = document.getElementById('stat-active');
-  const statSuccess = document.getElementById('stat-success');
+  const statTotal = document.getElementById("stat-total");
+  const statActive = document.getElementById("stat-active");
+  const statSuccess = document.getElementById("stat-success");
 
   if (statTotal) statTotal.textContent = total.toString();
   if (statActive) statActive.textContent = active.toString();
@@ -453,14 +521,16 @@ function updateStats(): void {
  * Update empty state visibility
  */
 function updateEmptyState(isEmpty: boolean): void {
-  const emptyState = document.getElementById('empty-state');
-  const listView = document.getElementById('applications-list');
+  const emptyState = document.getElementById("empty-state");
+  const listView = document.getElementById("applications-list");
 
   if (isEmpty) {
-    emptyState?.classList.remove('hidden');
-    listView?.querySelectorAll('.application-card').forEach(card => card.remove());
+    emptyState?.classList.remove("hidden");
+    listView
+      ?.querySelectorAll(".application-card")
+      .forEach((card) => card.remove());
   } else {
-    emptyState?.classList.add('hidden');
+    emptyState?.classList.add("hidden");
   }
 }
 
@@ -468,8 +538,8 @@ function updateEmptyState(isEmpty: boolean): void {
  * View job details
  */
 function viewJobDetails(jobId: number): void {
-  chrome.tabs.create({ 
-    url: chrome.runtime.getURL(`results/results.html?jobId=${jobId}`)
+  chrome.tabs.create({
+    url: chrome.runtime.getURL(`results/results.html?jobId=${jobId}`),
   });
 }
 
@@ -477,12 +547,20 @@ function viewJobDetails(jobId: number): void {
  * Edit application (open status update modal)
  */
 function editApplication(appId: number): void {
-  const app = applications.find(a => a.id === appId);
-  if (!app) return;
+  console.log("Edit application clicked:", appId);
+  const app = applications.find((a) => a.id === appId);
+  if (!app) {
+    console.error("Application not found:", appId);
+    return;
+  }
 
   const job = jobs.get(app.job_id);
-  if (!job) return;
+  if (!job) {
+    console.error("Job not found for application:", app.job_id);
+    return;
+  }
 
+  console.log("Opening status modal for:", job.title);
   openStatusModal(app, job);
 }
 
@@ -490,26 +568,30 @@ function editApplication(appId: number): void {
  * Open status update modal
  */
 function openStatusModal(app: Application, job: Job): void {
-  const modal = document.getElementById('status-modal')!;
-  const modalJobTitle = document.getElementById('modal-job-title')!;
-  const modalJobCompany = document.getElementById('modal-job-company')!;
-  const statusSelect = document.getElementById('status-select') as HTMLSelectElement;
-  const statusNote = document.getElementById('status-note') as HTMLTextAreaElement;
-  const historyList = document.getElementById('history-list')!;
+  const modal = document.getElementById("status-modal")!;
+  const modalJobTitle = document.getElementById("modal-job-title")!;
+  const modalJobCompany = document.getElementById("modal-job-company")!;
+  const statusSelect = document.getElementById(
+    "status-select",
+  ) as HTMLSelectElement;
+  const statusNote = document.getElementById(
+    "status-note",
+  ) as HTMLTextAreaElement;
+  const historyList = document.getElementById("history-list")!;
 
   // Set job info
   modalJobTitle.textContent = job.title;
-  modalJobCompany.textContent = job.company || 'Company not specified';
+  modalJobCompany.textContent = job.company || "Company not specified";
 
   // Set current status
   statusSelect.value = app.status;
-  statusNote.value = '';
+  statusNote.value = "";
 
   // Render status history
   renderStatusHistory(app, historyList);
 
   // Show modal
-  modal.classList.remove('hidden');
+  modal.classList.remove("hidden");
 
   // Setup modal event listeners
   setupModalListeners(app);
@@ -519,23 +601,25 @@ function openStatusModal(app: Application, job: Job): void {
  * Render status history
  */
 function renderStatusHistory(app: Application, container: HTMLElement): void {
-  container.innerHTML = '';
+  container.innerHTML = "";
 
   // Sort history by timestamp (newest first)
-  const history = [...app.status_history].sort((a, b) => b.timestamp - a.timestamp);
+  const history = [...app.status_history].sort(
+    (a, b) => b.timestamp - a.timestamp,
+  );
 
-  history.forEach(entry => {
+  history.forEach((entry) => {
     const date = new Date(entry.timestamp).toLocaleString();
-    const statusText = entry.status.replace('_', ' ');
+    const statusText = entry.status.replace("_", " ");
 
-    const item = document.createElement('div');
-    item.className = 'history-item';
+    const item = document.createElement("div");
+    item.className = "history-item";
     item.innerHTML = `
       <div class="history-icon">📌</div>
       <div class="history-content">
         <div class="history-status">${escapeHtml(statusText)}</div>
         <div class="history-date">${date}</div>
-        ${entry.note ? `<div class="history-note">"${escapeHtml(entry.note)}"</div>` : ''}
+        ${entry.note ? `<div class="history-note">"${escapeHtml(entry.note)}"</div>` : ""}
       </div>
     `;
     container.appendChild(item);
@@ -546,23 +630,23 @@ function renderStatusHistory(app: Application, container: HTMLElement): void {
  * Setup modal event listeners
  */
 function setupModalListeners(app: Application): void {
-  const modal = document.getElementById('status-modal')!;
-  const closeBtn = document.getElementById('modal-close-btn')!;
-  const cancelBtn = document.getElementById('modal-cancel-btn')!;
-  const saveBtn = document.getElementById('modal-save-btn')!;
-  const overlay = modal.querySelector('.modal-overlay')!;
+  const modal = document.getElementById("status-modal")!;
+  const closeBtn = document.getElementById("modal-close-btn")!;
+  const cancelBtn = document.getElementById("modal-cancel-btn")!;
+  const saveBtn = document.getElementById("modal-save-btn")!;
+  const overlay = modal.querySelector(".modal-overlay")!;
 
   // Close handlers
   const closeModal = () => {
-    modal.classList.add('hidden');
+    modal.classList.add("hidden");
     cleanup();
   };
 
   const cleanup = () => {
-    closeBtn.removeEventListener('click', closeModal);
-    cancelBtn.removeEventListener('click', closeModal);
-    overlay.removeEventListener('click', closeModal);
-    saveBtn.removeEventListener('click', saveHandler);
+    closeBtn.removeEventListener("click", closeModal);
+    cancelBtn.removeEventListener("click", closeModal);
+    overlay.removeEventListener("click", closeModal);
+    saveBtn.removeEventListener("click", saveHandler);
   };
 
   const saveHandler = async () => {
@@ -570,20 +654,24 @@ function setupModalListeners(app: Application): void {
     closeModal();
   };
 
-  closeBtn.addEventListener('click', closeModal);
-  cancelBtn.addEventListener('click', closeModal);
-  overlay.addEventListener('click', closeModal);
-  saveBtn.addEventListener('click', saveHandler);
+  closeBtn.addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", closeModal);
+  saveBtn.addEventListener("click", saveHandler);
 }
 
 /**
  * Update application status
  */
 async function updateApplicationStatus(app: Application): Promise<void> {
-  const statusSelect = document.getElementById('status-select') as HTMLSelectElement;
-  const statusNote = document.getElementById('status-note') as HTMLTextAreaElement;
+  const statusSelect = document.getElementById(
+    "status-select",
+  ) as HTMLSelectElement;
+  const statusNote = document.getElementById(
+    "status-note",
+  ) as HTMLTextAreaElement;
 
-  const newStatus = statusSelect.value as Application['status'];
+  const newStatus = statusSelect.value as Application["status"];
   const note = statusNote.value.trim() || undefined;
 
   if (newStatus === app.status) {
@@ -595,7 +683,7 @@ async function updateApplicationStatus(app: Application): Promise<void> {
     await db.updateApplicationStatus(app.id!, newStatus, note);
 
     // Update local state
-    const appIndex = applications.findIndex(a => a.id === app.id);
+    const appIndex = applications.findIndex((a) => a.id === app.id);
     if (appIndex >= 0) {
       const updated = await db.getApplication(app.id!);
       if (updated) {
@@ -607,11 +695,10 @@ async function updateApplicationStatus(app: Application): Promise<void> {
     renderApplications();
 
     // Show success feedback
-    showSuccessToast(`Status updated to ${newStatus.replace('_', ' ')}`);
-
+    showSuccessToast(`Status updated to ${newStatus.replace("_", " ")}`);
   } catch (error) {
-    console.error('Failed to update status:', error);
-    alert('Failed to update status. Please try again.');
+    console.error("Failed to update status:", error);
+    alert("Failed to update status. Please try again.");
   }
 }
 
@@ -619,7 +706,7 @@ async function updateApplicationStatus(app: Application): Promise<void> {
  * Show success toast notification
  */
 function showSuccessToast(message: string): void {
-  const toast = document.createElement('div');
+  const toast = document.createElement("div");
   toast.style.cssText = `
     position: fixed;
     top: 20px;
@@ -637,8 +724,8 @@ function showSuccessToast(message: string): void {
   document.body.appendChild(toast);
 
   setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s';
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s";
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
@@ -647,17 +734,17 @@ function showSuccessToast(message: string): void {
  * Show error message
  */
 function showError(message: string): void {
-  const container = document.querySelector('.container');
+  const container = document.querySelector(".container");
   if (!container) return;
 
-  const error = document.createElement('div');
-  error.className = 'empty-state';
+  const error = document.createElement("div");
+  error.className = "empty-state";
   error.innerHTML = `
     <div class="empty-icon">⚠️</div>
     <h2>Error</h2>
     <p>${escapeHtml(message)}</p>
   `;
-  
+
   container.appendChild(error);
 }
 
@@ -665,7 +752,7 @@ function showError(message: string): void {
  * Escape HTML to prevent XSS
  */
 function escapeHtml(text: string): string {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
 }
@@ -677,72 +764,79 @@ async function exportToExcel(): Promise<void> {
   try {
     // Get all applications
     const applications = await db.getAllApplications();
-    
+
     if (applications.length === 0) {
-      showSuccessToast('No applications to export');
+      showSuccessToast("No applications to export");
       return;
     }
 
     // Get all jobs for the applications
-    const jobPromises = applications.map(app => db.getJob(app.job_id));
+    const jobPromises = applications.map((app) => db.getJob(app.job_id));
     const jobs = await Promise.all(jobPromises);
 
     // Create CSV content
     const headers = [
-      'Company',
-      'Job Title',
-      'Status',
-      'Match Score',
-      'Applied Date',
-      'Interview Date',
-      'Notes',
-      'Job URL',
-      'Created At',
-      'Updated At'
+      "Company",
+      "Job Title",
+      "Status",
+      "Match Score",
+      "Applied Date",
+      "Interview Date",
+      "Notes",
+      "Job URL",
+      "Created At",
+      "Updated At",
     ];
 
     const rows = applications.map((app, index) => {
       const job = jobs[index];
-      const appliedDate = app.applied_at ? new Date(app.applied_at).toLocaleDateString() : '';
-      const interviewDate = app.interview_date ? new Date(app.interview_date).toLocaleDateString() : '';
-      const createdAt = app.status_history.length > 0 
-        ? new Date(app.status_history[0].timestamp).toLocaleDateString() 
-        : '';
+      const appliedDate = app.applied_at
+        ? new Date(app.applied_at).toLocaleDateString()
+        : "";
+      const interviewDate = app.interview_date
+        ? new Date(app.interview_date).toLocaleDateString()
+        : "";
+      const createdAt =
+        app.status_history.length > 0
+          ? new Date(app.status_history[0].timestamp).toLocaleDateString()
+          : "";
       const updatedAt = new Date(app.updated_at).toLocaleDateString();
-      
+
       return [
-        job?.company || 'N/A',
-        job?.title || 'N/A',
+        job?.company || "N/A",
+        job?.title || "N/A",
         formatStatus(app.status),
-        job?.match_score || 'N/A',
+        job?.match_score || "N/A",
         appliedDate,
         interviewDate,
-        app.notes || '',
-        job?.url || '',
+        app.notes || "",
+        job?.url || "",
         createdAt,
-        updatedAt
+        updatedAt,
       ];
     });
 
     // Convert to CSV
     const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-    ].join('\n');
+      headers.join(","),
+      ...rows.map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      ),
+    ].join("\n");
 
     // Create blob and download
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `job-applications-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `job-applications-${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
 
     showSuccessToast(`Exported ${applications.length} applications`);
   } catch (error) {
-    console.error('Export error:', error);
-    showSuccessToast('Failed to export applications');
+    console.error("Export error:", error);
+    showSuccessToast("Failed to export applications");
   }
 }
 
@@ -751,7 +845,7 @@ async function exportToExcel(): Promise<void> {
  */
 function formatStatus(status: string): string {
   return status
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }

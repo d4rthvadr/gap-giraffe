@@ -1,361 +1,402 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Application Tracker - Gap Giraffe</title>
-  <link rel="stylesheet" href="../styles/variables.css">
-  <link rel="stylesheet" href="tracker.css">
-</head>
-<body>
-  <div class="container">
-    <!-- Header -->
-    <header>
-      <div class="header-content">
-        <div class="title-section">
-          <div class="logo">
-            <svg class="logo-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <ellipse cx="12" cy="8" rx="4" ry="5"/>
-              <path d="M9 6 L8 4"/>
-              <path d="M15 6 L16 4"/>
-              <path d="M10 12 L10 20"/>
-              <path d="M14 12 L14 20"/>
-              <circle cx="11" cy="7" r="0.5" fill="currentColor"/>
-              <circle cx="13" cy="9" r="0.5" fill="currentColor"/>
-            </svg>
-            <h1>Application Tracker</h1>
-          </div>
-          <p class="subtitle">Track your job applications</p>
-        </div>
-        <div class="header-actions">
-          <button id="view-toggle-btn" class="secondary-btn">
-            <svg id="view-icon" class="icon icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-            <span id="view-text">Board View</span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <!-- Controls Bar -->
-      <div class="controls-bar">
-        <div class="search-box">
-          <input 
-            type="text" 
-            id="search-input" 
-            placeholder="Search applications..." 
-            class="search-input"
-          />
-        </div>
-        
-        <div class="filter-controls">
-          <select id="status-filter" class="filter-select">
-            <option value="all">All Statuses</option>
-            <option value="saved">Saved</option>
-            <option value="applied">Applied</option>
-            <option value="screening">Screening</option>
-            <option value="interview_scheduled">Interview Scheduled</option>
-            <option value="interview_completed">Interview Completed</option>
-            <option value="offer">Offer</option>
-            <option value="accepted">Accepted</option>
-            <option value="rejected">Rejected</option>
-            <option value="withdrawn">Withdrawn</option>
-          </select>
-
-          <select id="sort-by" class="filter-select">
-            <option value="recent">Most Recent</option>
-            <option value="oldest">Oldest First</option>
-            <option value="score">Match Score</option>
-            <option value="company">Company A-Z</option>
-          </select>
-
-          <button id="export-btn" class="secondary-btn" title="Export to Excel">
-            <span>📊 Export</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Stats Summary -->
-      <div class="stats-summary" id="stats-summary">
-        <div class="stat-card">
-          <span class="stat-label">Total Applications</span>
-          <span class="stat-value" id="stat-total">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Active</span>
-          <span class="stat-value" id="stat-active">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Success Rate</span>
-          <span class="stat-value" id="stat-success">0%</span>
-        </div>
-        <div class="stat-card stat-card-action">
-          <button class="analytics-toggle-btn" id="show-analytics-btn">
-            <span>📊 View Analytics</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Analytics Section -->
-      <div class="analytics-section hidden" id="analytics-section">
-        <div class="analytics-header">
-          <h2>📊 Analytics Dashboard</h2>
-          <button class="secondary-btn" id="close-analytics-btn">Close</button>
-        </div>
-
-        <div class="analytics-grid">
-          <!-- Detailed Stats -->
-          <div class="analytics-card">
-            <h3>Application Funnel</h3>
-            <div class="funnel-chart">
-              <div class="funnel-stage">
-                <div class="funnel-header">
-                  <span class="funnel-label">Total Saved</span>
-                  <span class="funnel-value" id="funnel-total">0</span>
-                </div>
-                <div class="funnel-track">
-                  <div class="funnel-bar" data-stage="total"></div>
-                </div>
-              </div>
-              <div class="funnel-stage">
-                <div class="funnel-header">
-                  <span class="funnel-label">Applied</span>
-                  <span class="funnel-value" id="funnel-applied">0</span>
-                </div>
-                <div class="funnel-track">
-                  <div class="funnel-bar" data-stage="applied"></div>
-                </div>
-              </div>
-              <div class="funnel-stage">
-                <div class="funnel-header">
-                  <span class="funnel-label">Interviews</span>
-                  <span class="funnel-value" id="funnel-interview">0</span>
-                </div>
-                <div class="funnel-track">
-                  <div class="funnel-bar" data-stage="interview"></div>
-                </div>
-              </div>
-              <div class="funnel-stage">
-                <div class="funnel-header">
-                  <span class="funnel-label">Offers</span>
-                  <span class="funnel-value" id="funnel-offer">0</span>
-                </div>
-                <div class="funnel-track">
-                  <div class="funnel-bar" data-stage="offer"></div>
-                </div>
-              </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Application Tracker - Gap Giraffe</title>
+    <link rel="stylesheet" href="../styles/variables.css" />
+    <link rel="stylesheet" href="tracker.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="header-content">
+          <div class="title-section">
+            <div class="logo">
+              <svg
+                class="logo-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <ellipse cx="12" cy="8" rx="4" ry="5" />
+                <path d="M9 6 L8 4" />
+                <path d="M15 6 L16 4" />
+                <path d="M10 12 L10 20" />
+                <path d="M14 12 L14 20" />
+                <circle cx="11" cy="7" r="0.5" fill="currentColor" />
+                <circle cx="13" cy="9" r="0.5" fill="currentColor" />
+              </svg>
+              <h1>Application Tracker</h1>
             </div>
+            <p class="subtitle">Track your job applications</p>
           </div>
-
-          <!-- Time Metrics -->
-          <div class="analytics-card">
-            <h3>⏱️ Time Metrics</h3>
-            <div class="metrics-list">
-              <div class="metric-item">
-                <span class="metric-label">Avg. Time to Interview</span>
-                <span class="metric-value" id="metric-time-interview">--</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">Avg. Time to Offer</span>
-                <span class="metric-value" id="metric-time-offer">--</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">Response Rate</span>
-                <span class="metric-value" id="metric-response-rate">--</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Status Breakdown -->
-          <div class="analytics-card">
-            <h3>📈 Status Breakdown</h3>
-            <div class="status-breakdown">
-              <div class="breakdown-item">
-                <span class="breakdown-label">Saved</span>
-                <div class="breakdown-bar">
-                  <div class="breakdown-fill" id="breakdown-saved"></div>
-                </div>
-                <span class="breakdown-count" id="count-breakdown-saved">0</span>
-              </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">Applied</span>
-                <div class="breakdown-bar">
-                  <div class="breakdown-fill" id="breakdown-applied"></div>
-                </div>
-                <span class="breakdown-count" id="count-breakdown-applied">0</span>
-              </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">Screening</span>
-                <div class="breakdown-bar">
-                  <div class="breakdown-fill" id="breakdown-screening"></div>
-                </div>
-                <span class="breakdown-count" id="count-breakdown-screening">0</span>
-              </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">Interview</span>
-                <div class="breakdown-bar">
-                  <div class="breakdown-fill" id="breakdown-interview"></div>
-                </div>
-                <span class="breakdown-count" id="count-breakdown-interview">0</span>
-              </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">Offer</span>
-                <div class="breakdown-bar">
-                  <div class="breakdown-fill" id="breakdown-offer"></div>
-                </div>
-                <span class="breakdown-count" id="count-breakdown-offer">0</span>
-              </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">Closed</span>
-                <div class="breakdown-bar">
-                  <div class="breakdown-fill" id="breakdown-closed"></div>
-                </div>
-                <span class="breakdown-count" id="count-breakdown-closed">0</span>
-              </div>
-            </div>
+          <div class="header-actions">
+            <button id="view-toggle-btn" class="secondary-btn">
+              <svg
+                id="view-icon"
+                class="icon icon-sm"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span id="view-text">Board View</span>
+            </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      <!-- List View -->
-      <div id="list-view" class="list-view">
-        <div id="applications-list" class="applications-list">
-          <!-- Loading state -->
-          <div class="loading" id="loading-state">
-            <div class="spinner"></div>
-            <p>Loading applications...</p>
+      <main>
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+          <div class="search-box">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search applications..."
+              class="search-input"
+            />
           </div>
 
-          <!-- Empty state -->
-          <div class="empty-state hidden" id="empty-state">
-            <div class="empty-icon">📭</div>
-            <h2>No Applications Yet</h2>
-            <p>Start by analyzing a job and saving it to applications</p>
-            <button class="primary-btn" id="analyze-job-btn">
-              🔍 Analyze a Job
+          <div class="filter-controls">
+            <select id="status-filter" class="filter-select">
+              <option value="all">All Statuses</option>
+              <option value="saved">Saved</option>
+              <option value="applied">Applied</option>
+              <option value="screening">Screening</option>
+              <option value="interview_scheduled">Interview Scheduled</option>
+              <option value="interview_completed">Interview Completed</option>
+              <option value="offer">Offer</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+              <option value="withdrawn">Withdrawn</option>
+            </select>
+
+            <select id="sort-by" class="filter-select">
+              <option value="recent">Most Recent</option>
+              <option value="oldest">Oldest First</option>
+              <option value="score">Match Score</option>
+              <option value="company">Company A-Z</option>
+            </select>
+
+            <button
+              id="export-btn"
+              class="secondary-btn"
+              title="Export to Excel"
+            >
+              <span>📊 Export</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="stats-summary" id="stats-summary">
+          <div class="stat-card">
+            <span class="stat-label">Total Applications</span>
+            <span class="stat-value" id="stat-total">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active</span>
+            <span class="stat-value" id="stat-active">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Success Rate</span>
+            <span class="stat-value" id="stat-success">0%</span>
+          </div>
+          <div class="stat-card stat-card-action">
+            <button class="analytics-toggle-btn" id="show-analytics-btn">
+              <span>📊 View Analytics</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="analytics-section hidden" id="analytics-section">
+          <div class="analytics-header">
+            <h2>📊 Analytics Dashboard</h2>
+            <button class="secondary-btn" id="close-analytics-btn">
+              Close
             </button>
           </div>
 
-          <!-- Applications will be inserted here -->
-        </div>
-      </div>
-
-      <!-- Board View (Kanban) -->
-      <div id="board-view" class="board-view hidden">
-        <div class="board-columns">
-          <div class="board-column" data-status="saved">
-            <div class="column-header">
-              <h3>💾 Saved</h3>
-              <span class="count" id="count-saved">0</span>
+          <div class="analytics-grid">
+            <!-- Detailed Stats -->
+            <div class="analytics-card">
+              <h3>Application Funnel</h3>
+              <div class="funnel-chart">
+                <div class="funnel-stage">
+                  <div class="funnel-header">
+                    <span class="funnel-label">Total Saved</span>
+                    <span class="funnel-value" id="funnel-total">0</span>
+                  </div>
+                  <div class="funnel-track">
+                    <div class="funnel-bar" data-stage="total"></div>
+                  </div>
+                </div>
+                <div class="funnel-stage">
+                  <div class="funnel-header">
+                    <span class="funnel-label">Applied</span>
+                    <span class="funnel-value" id="funnel-applied">0</span>
+                  </div>
+                  <div class="funnel-track">
+                    <div class="funnel-bar" data-stage="applied"></div>
+                  </div>
+                </div>
+                <div class="funnel-stage">
+                  <div class="funnel-header">
+                    <span class="funnel-label">Interviews</span>
+                    <span class="funnel-value" id="funnel-interview">0</span>
+                  </div>
+                  <div class="funnel-track">
+                    <div class="funnel-bar" data-stage="interview"></div>
+                  </div>
+                </div>
+                <div class="funnel-stage">
+                  <div class="funnel-header">
+                    <span class="funnel-label">Offers</span>
+                    <span class="funnel-value" id="funnel-offer">0</span>
+                  </div>
+                  <div class="funnel-track">
+                    <div class="funnel-bar" data-stage="offer"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="column-content" id="column-saved"></div>
+
+            <!-- Time Metrics -->
+            <div class="analytics-card">
+              <h3>⏱️ Time Metrics</h3>
+              <div class="metrics-list">
+                <div class="metric-item">
+                  <span class="metric-label">Avg. Time to Interview</span>
+                  <span class="metric-value" id="metric-time-interview"
+                    >--</span
+                  >
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Avg. Time to Offer</span>
+                  <span class="metric-value" id="metric-time-offer">--</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Response Rate</span>
+                  <span class="metric-value" id="metric-response-rate">--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Breakdown -->
+            <div class="analytics-card">
+              <h3>📈 Status Breakdown</h3>
+              <div class="status-breakdown">
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Saved</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="breakdown-saved"></div>
+                  </div>
+                  <span class="breakdown-count" id="count-breakdown-saved"
+                    >0</span
+                  >
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Applied</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="breakdown-applied"></div>
+                  </div>
+                  <span class="breakdown-count" id="count-breakdown-applied"
+                    >0</span
+                  >
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Screening</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="breakdown-screening"></div>
+                  </div>
+                  <span class="breakdown-count" id="count-breakdown-screening"
+                    >0</span
+                  >
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Interview</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="breakdown-interview"></div>
+                  </div>
+                  <span class="breakdown-count" id="count-breakdown-interview"
+                    >0</span
+                  >
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Offer</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="breakdown-offer"></div>
+                  </div>
+                  <span class="breakdown-count" id="count-breakdown-offer"
+                    >0</span
+                  >
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Closed</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="breakdown-closed"></div>
+                  </div>
+                  <span class="breakdown-count" id="count-breakdown-closed"
+                    >0</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- List View -->
+        <div id="list-view" class="list-view">
+          <div id="applications-list" class="applications-list">
+            <!-- Loading state -->
+            <div class="loading" id="loading-state">
+              <div class="spinner"></div>
+              <p>Loading applications...</p>
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-state hidden" id="empty-state">
+              <div class="empty-icon">📭</div>
+              <h2>No Applications Yet</h2>
+              <p>Start by analyzing a job and saving it to applications</p>
+              <button class="primary-btn" id="analyze-job-btn">
+                🔍 Analyze a Job
+              </button>
+            </div>
+
+            <!-- Applications will be inserted here -->
+          </div>
+        </div>
+
+        <!-- Board View (Kanban) -->
+        <div id="board-view" class="board-view hidden">
+          <div class="board-columns">
+            <div class="board-column" data-status="saved">
+              <div class="column-header">
+                <h3>💾 Saved</h3>
+                <span class="count" id="count-saved">0</span>
+              </div>
+              <div class="column-content" id="column-saved"></div>
+            </div>
+
+            <div class="board-column" data-status="applied">
+              <div class="column-header">
+                <h3>📤 Applied</h3>
+                <span class="count" id="count-applied">0</span>
+              </div>
+              <div class="column-content" id="column-applied"></div>
+            </div>
+
+            <div class="board-column" data-status="screening">
+              <div class="column-header">
+                <h3>👀 Screening</h3>
+                <span class="count" id="count-screening">0</span>
+              </div>
+              <div class="column-content" id="column-screening"></div>
+            </div>
+
+            <div class="board-column" data-status="interview_scheduled">
+              <div class="column-header">
+                <h3>📅 Interview</h3>
+                <span class="count" id="count-interview_scheduled">0</span>
+              </div>
+              <div class="column-content" id="column-interview_scheduled"></div>
+            </div>
+
+            <div class="board-column" data-status="offer">
+              <div class="column-header">
+                <h3>🎉 Offer</h3>
+                <span class="count" id="count-offer">0</span>
+              </div>
+              <div class="column-content" id="column-offer"></div>
+            </div>
+
+            <div class="board-column" data-status="closed">
+              <div class="column-header">
+                <h3>📁 Closed</h3>
+                <span class="count" id="count-closed">0</span>
+              </div>
+              <div class="column-content" id="column-closed"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="status-modal" class="modal hidden">
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Update Application Status</h2>
+            <button class="modal-close" id="modal-close-btn">✕</button>
           </div>
 
-          <div class="board-column" data-status="applied">
-            <div class="column-header">
-              <h3>📤 Applied</h3>
-              <span class="count" id="count-applied">0</span>
+          <div class="modal-body">
+            <div class="modal-job-info">
+              <h3 id="modal-job-title"></h3>
+              <p id="modal-job-company"></p>
             </div>
-            <div class="column-content" id="column-applied"></div>
+
+            <div class="form-group">
+              <label for="status-select">New Status</label>
+              <select id="status-select" class="modal-select">
+                <option value="saved">💾 Saved</option>
+                <option value="applied">📤 Applied</option>
+                <option value="screening">👀 Screening</option>
+                <option value="interview_scheduled">
+                  📅 Interview Scheduled
+                </option>
+                <option value="interview_completed">
+                  ✅ Interview Completed
+                </option>
+                <option value="offer">🎉 Offer Received</option>
+                <option value="accepted">✓ Accepted</option>
+                <option value="rejected">✗ Rejected</option>
+                <option value="withdrawn">⏸️ Withdrawn</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="status-note">Note (Optional)</label>
+              <textarea
+                id="status-note"
+                class="modal-textarea"
+                placeholder="Add a note about this status change..."
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="status-history" id="status-history">
+              <h4>Status History</h4>
+              <div id="history-list" class="history-list"></div>
+            </div>
           </div>
 
-          <div class="board-column" data-status="screening">
-            <div class="column-header">
-              <h3>👀 Screening</h3>
-              <span class="count" id="count-screening">0</span>
-            </div>
-            <div class="column-content" id="column-screening"></div>
-          </div>
-
-          <div class="board-column" data-status="interview_scheduled">
-            <div class="column-header">
-              <h3>📅 Interview</h3>
-              <span class="count" id="count-interview_scheduled">0</span>
-            </div>
-            <div class="column-content" id="column-interview_scheduled"></div>
-          </div>
-
-          <div class="board-column" data-status="offer">
-            <div class="column-header">
-              <h3>🎉 Offer</h3>
-              <span class="count" id="count-offer">0</span>
-            </div>
-            <div class="column-content" id="column-offer"></div>
-          </div>
-
-          <div class="board-column" data-status="closed">
-            <div class="column-header">
-              <h3>📁 Closed</h3>
-              <span class="count" id="count-closed">0</span>
-            </div>
-            <div class="column-content" id="column-closed"></div>
+          <div class="modal-footer">
+            <button class="secondary-btn" id="modal-cancel-btn">Cancel</button>
+            <button class="primary-btn" id="modal-save-btn">
+              Update Status
+            </button>
           </div>
         </div>
-      </div>
-
-
-
-    </main>
-  </div>
-
-  <!-- Status Update Modal -->
-  <div id="status-modal" class="modal hidden">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Update Application Status</h2>
-        <button class="modal-close" id="modal-close-btn">✕</button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="modal-job-info">
-          <h3 id="modal-job-title"></h3>
-          <p id="modal-job-company"></p>
-        </div>
-
-        <div class="form-group">
-          <label for="status-select">New Status</label>
-          <select id="status-select" class="modal-select">
-            <option value="saved">💾 Saved</option>
-            <option value="applied">📤 Applied</option>
-            <option value="screening">👀 Screening</option>
-            <option value="interview_scheduled">📅 Interview Scheduled</option>
-            <option value="interview_completed">✅ Interview Completed</option>
-            <option value="offer">🎉 Offer Received</option>
-            <option value="accepted">✓ Accepted</option>
-            <option value="rejected">✗ Rejected</option>
-            <option value="withdrawn">⏸️ Withdrawn</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="status-note">Note (Optional)</label>
-          <textarea 
-            id="status-note" 
-            class="modal-textarea" 
-            placeholder="Add a note about this status change..."
-            rows="3"
-          ></textarea>
-        </div>
-
-        <div class="status-history" id="status-history">
-          <h4>Status History</h4>
-          <div id="history-list" class="history-list"></div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="secondary-btn" id="modal-cancel-btn">Cancel</button>
-        <button class="primary-btn" id="modal-save-btn">Update Status</button>
       </div>
     </div>
-  </div>
 
-  <script src="../dist/tracker/tracker.js"></script>
-</body>
+    <script src="../dist/tracker/tracker.js"></script>
+  </body>
 </html>
