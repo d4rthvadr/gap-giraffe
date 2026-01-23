@@ -382,6 +382,9 @@ function renderBoardView(apps: Application[]): void {
 
     if (column) {
       column.innerHTML = "";
+      // Setup drop zone
+      setupDropZone(column, status);
+      
       statusApps.forEach((app) => {
         const job = jobs.get(app.job_id);
         if (job) {
@@ -454,6 +457,7 @@ function createBoardCard(app: Application, job: Job): HTMLElement {
   const card = document.createElement("div");
   card.className = "board-card";
   card.dataset.appId = app.id?.toString();
+  card.draggable = true;
 
   const updatedDate = new Date(app.updated_at).toLocaleDateString("en-US", {
     month: "short",
@@ -475,6 +479,17 @@ function createBoardCard(app: Application, job: Job): HTMLElement {
       </div>
     </div>
   `;
+
+  // Drag events
+  card.addEventListener("dragstart", (e) => {
+    e.dataTransfer!.effectAllowed = "move";
+    e.dataTransfer!.setData("application/json", JSON.stringify({ appId: app.id }));
+    card.classList.add("dragging");
+  });
+
+  card.addEventListener("dragend", () => {
+    card.classList.remove("dragging");
+  });
 
   // Event listeners
   card.querySelector('[data-action="view"]')?.addEventListener("click", (e) => {
@@ -838,6 +853,82 @@ async function exportToExcel(): Promise<void> {
     console.error("Export error:", error);
     showSuccessToast("Failed to export applications");
   }
+}
+
+/**
+ * Setup drop zone for board columns
+ */
+function setupDropZone(column: HTMLElement, targetStatus: string): void {
+  column.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = "move";
+    column.classList.add("drag-over");
+  });
+
+  column.addEventListener("dragleave", (e) => {
+    if (e.target === column) {
+      column.classList.remove("drag-over");
+    }
+  });
+
+  column.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    column.classList.remove("drag-over");
+
+    try {
+      const data = JSON.parse(e.dataTransfer!.getData("application/json"));
+      const appId = data.appId;
+
+      if (!appId) return;
+
+      // Map column ID to actual status
+      let newStatus: Application['status'];
+      switch (targetStatus) {
+        case "saved":
+          newStatus = "saved";
+          break;
+        case "applied":
+          newStatus = "applied";
+          break;
+        case "screening":
+          newStatus = "screening";
+          break;
+        case "interview_scheduled":
+          newStatus = "interview_scheduled";
+          break;
+        case "offer":
+          newStatus = "offer";
+          break;
+        case "closed":
+          // Default to rejected for closed column
+          newStatus = "rejected";
+          break;
+        default:
+          return;
+      }
+
+      // Update application status
+      await db.updateApplicationStatus(appId, newStatus);
+
+      // Update local state
+      const appIndex = applications.findIndex((a) => a.id === appId);
+      if (appIndex >= 0) {
+        const updated = await db.getApplication(appId);
+        if (updated) {
+          applications[appIndex] = updated;
+        }
+      }
+
+      // Re-render board
+      renderApplications();
+      updateStats();
+
+      console.log(`Moved application ${appId} to ${newStatus}`);
+    } catch (error) {
+      console.error("Drop error:", error);
+      showError("Failed to update application status");
+    }
+  });
 }
 
 /**

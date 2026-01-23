@@ -553,6 +553,27 @@ header h1 {
   flex-direction: column;
   gap: var(--space-3);
   min-height: 200px;
+  transition: background-color var(--transition-fast);
+}
+
+.column-cards.drag-over {
+  background-color: rgba(37, 99, 235, 0.05);
+  border-radius: var(--radius-md);
+}
+
+.column-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 200px;
+  transition: background-color var(--transition-fast);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+}
+
+.column-content.drag-over {
+  background-color: rgba(37, 99, 235, 0.1);
+  border: 2px dashed rgba(37, 99, 235, 0.3);
 }
 
 .board-card {
@@ -560,8 +581,17 @@ header h1 {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   padding: var(--space-3);
-  cursor: pointer;
+  cursor: grab;
   transition: all var(--transition-fast);
+}
+
+.board-card:active {
+  cursor: grabbing;
+}
+
+.board-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
 }
 
 .board-card:hover {
