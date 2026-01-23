@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // Handle browser back/forward buttons
-window.addEventListener('popstate', (event) => {
+window.addEventListener("popstate", (event) => {
   const urlParams = new URLSearchParams(window.location.search);
-  const jobId = urlParams.get('jobId');
-  
+  const jobId = urlParams.get("jobId");
+
   if (jobId) {
     showJobDetailsModal(parseInt(jobId));
   } else {
@@ -44,10 +44,10 @@ async function initialize(): Promise<void> {
 
     // Render initial view
     renderApplications();
-    
+
     // Check if URL has jobId parameter (direct link or refresh)
     const urlParams = new URLSearchParams(window.location.search);
-    const jobId = urlParams.get('jobId');
+    const jobId = urlParams.get("jobId");
     if (jobId) {
       showJobDetailsModal(parseInt(jobId));
     }
@@ -577,9 +577,9 @@ function updateEmptyState(isEmpty: boolean): void {
 function viewJobDetails(jobId: number): void {
   // Use iframe to show job details without leaving the page
   const currentUrl = new URL(window.location.href);
-  currentUrl.searchParams.set('jobId', jobId.toString());
-  history.pushState({ jobId }, '', currentUrl);
-  
+  currentUrl.searchParams.set("jobId", jobId.toString());
+  history.pushState({ jobId }, "", currentUrl);
+
   // Load job details in iframe or modal
   showJobDetailsModal(jobId);
 }
@@ -589,12 +589,12 @@ function viewJobDetails(jobId: number): void {
  */
 function showJobDetailsModal(jobId: number): void {
   // Create or show iframe with job details
-  let detailsContainer = document.getElementById('job-details-container');
-  
+  let detailsContainer = document.getElementById("job-details-container");
+
   if (!detailsContainer) {
-    detailsContainer = document.createElement('div');
-    detailsContainer.id = 'job-details-container';
-    detailsContainer.className = 'job-details-overlay';
+    detailsContainer = document.createElement("div");
+    detailsContainer.id = "job-details-container";
+    detailsContainer.className = "job-details-overlay";
     detailsContainer.innerHTML = `
       <div class="job-details-header">
         <button id="back-to-tracker" class="back-btn">← Back to Tracker</button>
@@ -602,31 +602,35 @@ function showJobDetailsModal(jobId: number): void {
       <iframe id="job-details-frame" src=""></iframe>
     `;
     document.body.appendChild(detailsContainer);
-    
+
     // Back button handler
-    document.getElementById('back-to-tracker')!.addEventListener('click', () => {
-      history.back();
-    });
+    document
+      .getElementById("back-to-tracker")!
+      .addEventListener("click", () => {
+        history.back();
+      });
   }
-  
+
   // Load job details
-  const iframe = document.getElementById('job-details-frame') as HTMLIFrameElement;
+  const iframe = document.getElementById(
+    "job-details-frame",
+  ) as HTMLIFrameElement;
   iframe.src = chrome.runtime.getURL(`results/results.html?jobId=${jobId}`);
-  detailsContainer.classList.add('visible');
-  
+  detailsContainer.classList.add("visible");
+
   // Hide tracker content
-  document.querySelector('.container')!.classList.add('hidden');
+  document.querySelector(".container")!.classList.add("hidden");
 }
 
 /**
  * Hide job details and show tracker
  */
 function hideJobDetailsModal(): void {
-  const detailsContainer = document.getElementById('job-details-container');
+  const detailsContainer = document.getElementById("job-details-container");
   if (detailsContainer) {
-    detailsContainer.classList.remove('visible');
+    detailsContainer.classList.remove("visible");
   }
-  document.querySelector('.container')!.classList.remove('hidden');
+  document.querySelector(".container")!.classList.remove("hidden");
 }
 
 /**
@@ -874,7 +878,6 @@ async function exportToExcel(): Promise<void> {
       "Status",
       "Match Score",
       "Applied Date",
-      "Interview Date",
       "Notes",
       "Job URL",
       "Created At",
@@ -885,9 +888,6 @@ async function exportToExcel(): Promise<void> {
       const job = jobs[index];
       const appliedDate = app.applied_at
         ? new Date(app.applied_at).toLocaleDateString()
-        : "";
-      const interviewDate = app.interview_date
-        ? new Date(app.interview_date).toLocaleDateString()
         : "";
       const createdAt =
         app.status_history.length > 0
@@ -901,7 +901,6 @@ async function exportToExcel(): Promise<void> {
         formatStatus(app.status),
         job?.match_score || "N/A",
         appliedDate,
-        interviewDate,
         app.notes || "",
         job?.url || "",
         createdAt,
