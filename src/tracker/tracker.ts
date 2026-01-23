@@ -384,7 +384,7 @@ function renderBoardView(apps: Application[]): void {
       column.innerHTML = "";
       // Setup drop zone
       setupDropZone(column, status);
-      
+
       statusApps.forEach((app) => {
         const job = jobs.get(app.job_id);
         if (job) {
@@ -483,7 +483,10 @@ function createBoardCard(app: Application, job: Job): HTMLElement {
   // Drag events
   card.addEventListener("dragstart", (e) => {
     e.dataTransfer!.effectAllowed = "move";
-    e.dataTransfer!.setData("application/json", JSON.stringify({ appId: app.id }));
+    e.dataTransfer!.setData(
+      "application/json",
+      JSON.stringify({ appId: app.id }),
+    );
     card.classList.add("dragging");
   });
 
@@ -660,8 +663,15 @@ function setupModalListeners(app: Application): void {
   const cleanup = () => {
     closeBtn.removeEventListener("click", closeModal);
     cancelBtn.removeEventListener("click", closeModal);
-    overlay.removeEventListener("click", closeModal);
+    overlay.removeEventListener("click", handleOverlayClick);
     saveBtn.removeEventListener("click", saveHandler);
+  };
+
+  const handleOverlayClick = (e: Event) => {
+    // Only close if clicking the overlay itself, not its children
+    if (e.target === overlay) {
+      closeModal();
+    }
   };
 
   const saveHandler = async () => {
@@ -671,7 +681,7 @@ function setupModalListeners(app: Application): void {
 
   closeBtn.addEventListener("click", closeModal);
   cancelBtn.addEventListener("click", closeModal);
-  overlay.addEventListener("click", closeModal);
+  overlay.addEventListener("click", handleOverlayClick);
   saveBtn.addEventListener("click", saveHandler);
 }
 
@@ -882,7 +892,7 @@ function setupDropZone(column: HTMLElement, targetStatus: string): void {
       if (!appId) return;
 
       // Map column ID to actual status
-      let newStatus: Application['status'];
+      let newStatus: Application["status"];
       switch (targetStatus) {
         case "saved":
           newStatus = "saved";
